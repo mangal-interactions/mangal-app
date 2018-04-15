@@ -2,6 +2,7 @@
 
 > mangal web app aimed to explore and expose the content of mangal-api
 
+
 ## Build Setup
 
 ``` bash
