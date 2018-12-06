@@ -2,9 +2,28 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import BootstrapVue from 'bootstrap-vue'
+import { L, LMap, LTileLayer, LMarker } from 'vue2-leaflet'
 import router from './router'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import 'leaflet/dist/leaflet.css'
 
 Vue.config.productionTip = false
+
+Vue.component('l-map', LMap)
+Vue.component('l-tilelayer', LTileLayer)
+Vue.component('l-marker', LMarker)
+
+delete L.Icon.Default.prototype._getIconUrl
+
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+})
+
+Vue.use(BootstrapVue)
 
 /* eslint-disable no-new */
 new Vue({
