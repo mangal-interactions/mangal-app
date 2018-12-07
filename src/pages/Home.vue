@@ -11,8 +11,14 @@ export default {
 </script>
 
 <template>
-    <div>
-        <Navig></Navig>
-        <MapMangal></MapMangal>
-    </div>
+<div id="app">
+  <v-app>
+    <Navig></Navig>
+    <v-content>
+      <v-container class="pa-0" fluid fill-height>
+          <MapMangal></MapMangal>
+      </v-container>
+    </v-content>
+  </v-app>
+</div>
 </template>
