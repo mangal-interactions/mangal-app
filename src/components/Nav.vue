@@ -1,10 +1,70 @@
 <template>
-    <v-toolbar class="teal">
+  <div>
+    <v-navigation-drawer fixed v-model="drawerRight" right clipped app width="500">
+      <v-layout wrap fill-height row align-center v-if="$store.state.loading">
+        <v-flex x12 class="text-xs-center">
+          <v-progress-circular
+            :size="70"
+            :width="7"
+            color="teal"
+            indeterminate
+          ></v-progress-circular>
+          <p>Fetching data...</p>
+        </v-flex>
+      </v-layout>
+      <v-layout wrap row v-if="!$store.state.loading">
+        <v-flex x12 class="text-xs-center">
+          <Network></Network>
+        </v-flex>
+      </v-layout>
+    </v-navigation-drawer>
+    <v-toolbar color="teal" dark fixed app clipped-right>
+      <v-toolbar-title class="white--text font-weight-bold ">
+        Mangal.io -
+        <span class="font-weight-regular">Ecological interaction database</span>
+      </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn class="white--text" flat>Link One</v-btn>
-        <v-btn class="white--text" flat>Link Two</v-btn>
-        <v-btn class="white--text" flat>Link Three</v-btn>
+        <v-btn depressed color="teal">
+          Code
+          <v-icon class="pa-2">fab fa-github</v-icon>
+        </v-btn>
+        <v-btn depressed color="teal">
+          API
+          <v-icon class="pa-2">fas fa-code</v-icon>
+        </v-btn>
+        <v-btn depressed color="teal">
+          Docs
+          <v-icon class="pa-2">fas fa-book</v-icon>
+        </v-btn>
+        <v-toolbar-side-icon @click.stop="drawerRight = !drawerRight"></v-toolbar-side-icon>
       </v-toolbar-items>
     </v-toolbar>
+  </div>
 </template>
+
+<script>
+import Network from './Network'
+
+export default {
+  data () {
+    return {
+      drawerRight: true
+    }
+  },
+  components: {
+    Network
+  }
+}
+</script>
+
+<style scoped>
+  @import url('https://fonts.googleapis.com/css?family=Cardo');
+  .v-toolbar__title {
+    font-family: Cardo;
+    font-size: 16px;
+  }
+  .v-icon {
+    font-size: 14px
+  }
+</style>

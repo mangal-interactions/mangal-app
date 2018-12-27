@@ -1,14 +1,18 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import 'material-design-icons-iconfont/dist/material-design-icons.css' // Ensure you are using css-loader
+
+import '@fortawesome/fontawesome-free/css/all.css'
 import Vue from 'vue'
 import App from './App'
-import { L, LMap, LTileLayer, LMarker, LPopup } from 'vue2-leaflet'
 import router from './router'
 import VueLogger from 'vuejs-logger'
 import Vuetify from 'vuetify'
+import store from './store'
 import 'vuetify/dist/vuetify.min.css'
+import 'leaflet'
+import 'leaflet.markercluster'
 import 'leaflet/dist/leaflet.css'
+const L = window.L
 
 Vue.config.productionTip = false
 
@@ -22,11 +26,6 @@ const LoggerOptions = {
   showConsoleColors: true
 }
 
-Vue.component('l-map', LMap)
-Vue.component('l-tilelayer', LTileLayer)
-Vue.component('l-marker', LMarker)
-Vue.component('l-popup', LPopup)
-
 delete L.Icon.Default.prototype._getIconUrl
 
 L.Icon.Default.mergeOptions({
@@ -35,16 +34,16 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 })
 
-Vue.use(Vuetify, { iconfont: 'mdi' })
+Vue.use(Vuetify, {
+  iconfont: 'fa'
+})
 Vue.use(VueLogger, LoggerOptions)
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
-  template: '<App/>',
-  data: () => ({
-    drawer: null
-  })
+  template: '<App/>'
 })
