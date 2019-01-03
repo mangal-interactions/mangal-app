@@ -19,7 +19,7 @@
       </v-layout>
     </v-navigation-drawer>
     <v-toolbar color="teal" dark fixed app clipped-right>
-      <v-toolbar-title class="white--text font-weight-bold ">
+      <v-toolbar-title class="white--text font-weight-bold">
         Mangal.io -
         <span class="font-weight-regular">Ecological interaction database</span>
       </v-toolbar-title>

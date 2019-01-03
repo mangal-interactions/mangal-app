@@ -8,58 +8,51 @@
 // import axios from 'axios'
 import 'leaflet'
 import 'leaflet.markercluster'
-import _ from 'lodash'
 const L = window.L
 
 export default {
   methods: {
-    getLayerNetworks () {
+    getMapCollection () {
+      return Object.values(this.$store.state.mapCollection)
+    },
+    setLayerNetworks () {
       let layerNet = L.featureGroup()
-      // Compute unique location for remeasured sites
-      let uqLoc = _
-        .chain(this.$store.state.networks)
-        .map('localisation')
-        .uniqWith(_.isEqual)
-        .value()
 
-      for (let index = 0; index < uqLoc.length; index++) {
-        const loc = uqLoc[index]
-        let networks = _
-          .chain(this.$store.state.networks)
-          .find(function (obj) {
-            return obj.localisation === loc
-          })
-          .value()
-        console.log(networks)
-      }
-      this.$store.state.networks.forEach(network => {
+      this.getMapCollection().forEach(netGroup => {
+        let records = netGroup.map(
+          function (net) {
+            return {
+              id: net.id,
+              date: net.date,
+              name: net.name
+            }
+          }
+        )
         let feature = {
           type: 'Feature',
           properties: {
-            name: network.name,
-            id: network.id
+            measurements: records
           },
           geometry: {
-            type: network.localisation.type,
-            coordinates: network.localisation.coordinates
+            type: netGroup[0].localisation.type,
+            coordinates: netGroup[0].localisation.coordinates
           }
         }
+        let popup = '<h3>List of networks</h3>'
+        feature.properties.measurements.forEach((meas) => {
+          popup = popup.concat('<div>', meas.name, ' - ', new Date(meas.date).getFullYear(), '</div>')
+        })
+
         // Add feature to the map
         L.geoJSON(feature)
-          .bindPopup(
-            '<h3 style="font-weight:bold;">' +
-            feature.properties.name.split('_').join(' ').replace(/^\w/, c => c.toUpperCase()) +
-            '</h3>' +
-            '<b>Mangal ID: </b>' +
-            feature.properties.id + '</br>'
-          )
+          .bindPopup(popup)
           .addTo(layerNet)
       })
       return layerNet
     },
-    storeNetworkId (l) {
-      let idNet = l.layer.feature.properties.id
-      this.$store.dispatch('setSelectedNet', idNet)
+    storeNetworks (l) {
+      let idNet = l.layer.feature.properties.measurements[0].id
+      this.$store.dispatch('setNet', idNet)
     }
   },
   mounted () {
@@ -73,7 +66,7 @@ export default {
     let streets = L.tileLayer(mbUrl, {id: 'mapbox.streets', attribution: mbAttr})
     let satellite = L.tileLayer(mbUrl, {id: 'mapbox.satellite', attribution: mbAttr})
     let satelliteStreet = L.tileLayer(mbUrl, {id: 'mapbox.streets-satellite', attribution: mbAttr})
-    var baseLayers = {
+    let baseLayers = {
       'Grayscale': grayscale,
       'Streets': streets,
       'Satellite': satellite,
@@ -82,10 +75,12 @@ export default {
     L.control.layers(baseLayers).addTo(mangalMap)
     streets.addTo(mangalMap)
     this.$store.dispatch('loadNetworks').then(() => {
-      let layerNet = this.getLayerNetworks()
+      return this.$store.dispatch('loadNetworksCollection')
+    }).then(() => {
+      let layerNet = this.setLayerNetworks()
       layerNet.addTo(mangalMap)
-      mangalMap.fitBounds(layerNet.getBounds())
-      layerNet.on('click', this.storeNetworkId)
+      mangalMap.fitBounds(layerNet.getBounds(), { padding: [ 20, 20 ] })
+      layerNet.on('click', this.storeNetworks)
     })
   }
 }

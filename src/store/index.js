@@ -1,16 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import _ from 'lodash'
 
 Vue.use(Vuex)
 
 // root state object.
 // each Vuex instance is just a single state tree.
 const state = {
+  mapCollection: null,
   networks: [],
   interactions: [],
   taxons: [],
-  selectNet: null,
+  selectNet: 125,
   loading: true
 }
 
@@ -25,8 +27,11 @@ const mutations = {
   changeLoadingState (state, loading) {
     state.loading = loading
   },
-  setSelectedNet (state, selectNet) {
+  setNet (state, selectNet) {
     state.selectNet = selectNet
+  },
+  setMapCollection (state, mapCollection) {
+    state.mapCollection = mapCollection
   },
   // Interactions
   storeInteractions (state, interactions) {
@@ -47,10 +52,24 @@ const mutations = {
 // actions are functions that causes side effects and can involve
 // asynchronous operations.
 const actions = {
+  loadNetworksCollection ({ commit, state }) {
+    return new Promise((resolve) => {
+      // Create collection
+      let netCollection = _
+        .chain(state.networks)
+        .each(function (net) {
+          net.group = net.localisation.coordinates.join('_')
+        })
+        .groupBy('group')
+        .value()
+      commit('setMapCollection', netCollection)
+      return resolve()
+    })
+  },
   loadNetworks ({ commit }) {
+    commit('emptyNetworks')
     return new Promise((resolve, reject) => {
-      commit('emptyNetworks')
-      axios.get(process.env.BASE_URL + '/network?page=0')
+      axios.get(process.env.BASE_URL + '/network?q=Kolpelke%&page=0')
         .then(response => {
           // store page 0
           commit('storeNetworks', response.data)
@@ -60,7 +79,7 @@ const actions = {
           if (nPages > 0 && nPages !== Infinity) {
             let requests = []
             for (let i = 1; i <= nPages; i++) {
-              requests.push(axios.get(process.env.BASE_URL + '/network?page=' + i))
+              requests.push(axios.get(process.env.BASE_URL + '/network?q=Kolpelke%&page=' + i))
             }
             Promise.all(requests)
               .then(responses => responses.forEach(
@@ -69,20 +88,18 @@ const actions = {
                 }
               )).then(() => {
                 commit('changeLoadingState', false)
+                return resolve()
               }).catch((err) => {
                 this.$log.error(err)
+                return reject(err)
               })
           }
-        }).then(() => {
-          resolve()
-        }).catch((err) => {
-          reject(err)
         })
     })
   },
   loadInteractions ({ commit }, ids) {
+    commit('emptyInteractions')
     return new Promise((resolve, reject) => {
-      commit('emptyInteractions')
       let requests = []
       for (let index = 0; index < ids.length; index++) {
         const id = ids[index]
@@ -107,8 +124,8 @@ const actions = {
     })
   },
   loadTaxons ({ commit }, idNet) {
+    commit('emptyTaxons')
     return new Promise((resolve, reject) => {
-      commit('emptyTaxons')
       axios.get(process.env.BASE_URL + '/taxon?network_id=' + idNet + '&page=0')
         .then(response => {
           // store page 0
@@ -125,21 +142,18 @@ const actions = {
               .then(responses => responses.forEach(
                 response => {
                   commit('storeTaxons', response.data)
+                  return resolve()
                 }
               ))
               .catch((err) => {
-                this.$log.error(err)
+                return reject(err)
               })
           }
-        }).then(() => {
-          return resolve()
-        }).catch((err) => {
-          return reject(err)
         })
     })
   },
-  setSelectedNet ({ commit }, selectNet) {
-    return commit('setSelectedNet', selectNet)
+  setNet ({ commit }, selectNet) {
+    return commit('setNet', selectNet)
   }
 }
 

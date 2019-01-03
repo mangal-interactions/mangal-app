@@ -9,56 +9,64 @@
         Network
       </v-tab>
       <v-tab-item>
-        <v-layout row pa-12 fill-height v-if="!$store.state.selectNet">
-          <v-flex x12>
-            <v-alert
-              :value="true"
-              type="warning"
-              color="teal"
-            >
-              Select one network on the map
-            </v-alert>
-          </v-flex>
-        </v-layout>
-        <v-container>
-          <v-layout row wrap align-center>
-            <v-flex xs4>
-              <p class="text-uppercase">Select year</p>
+        <v-container pa-0>
+          <v-layout row wrap fill-height align-center>
+            <v-flex x4>
+              <h3 class="text-xs-center">Select network</h3>
             </v-flex>
             <v-flex x6 d-flex pl-3 pr-3>
               <v-select
                 color="teal"
-                :items="items"
               ></v-select>
             </v-flex>
           </v-layout>
+          <v-flex xs12>
+            <v-card color="teal" class="white--text">
+              <v-layout justify-center>
+                <v-flex x12>
+                  <v-card-title primary-title>
+                    <div>
+                      <div class="headline">Supermodel</div>
+                      <div>Foster the People</div>
+                      <div>(2014)</div>
+                    </div>
+                  </v-card-title>
+                </v-flex>
+              </v-layout>
+            </v-card>
+          </v-flex>
           <v-layout align-center justify-center fill-height pt-3 row>
-            <v-flex x4>
-              <v-card flat color="white" class="teal--text">
+            <v-flex x3>
+              <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="text-uppercase">Number of nodes</div>
+                  <div class="font-weight-bold teal--text">Number of nodes</div>
                   <p> {{ nNodes }} </p>
                 </div>
               </v-card>
             </v-flex>
-            <v-flex x4>
-              <v-card flat color="white" class="teal--text">
+            <v-flex x3>
+              <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="text-uppercase">Number of edges</div>
+                  <div class="font-weight-bold teal--text">Number of edges</div>
                   <p> {{ nEdges }} </p>
                 </div>
               </v-card>
             </v-flex>
-            <v-flex x4>
-              <v-card flat color="white" class="teal--text">
+            <v-flex x3>
+              <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="text-uppercase">Connectance</div>
+                  <div class="font-weight-bold teal--text">Connectance</div>
                   <p>{{ con }}</p>
                 </div>
               </v-card>
             </v-flex>
+            <v-flex x3>
+              <v-btn outline fab dark color="teal">
+                <v-icon dark>fas fa-download</v-icon>
+              </v-btn>
+            </v-flex>
           </v-layout>
-          <v-flex x12>
+          <v-flex x12 v-if="$store.state.selectNet">
             <v-card flat>
               <v-card-text>
                 <d3-network :net-nodes="nodes" :net-links="links" :options="options"></d3-network>
@@ -68,19 +76,13 @@
         </v-container>
       </v-tab-item>
       <v-tab ripple>
-        Nodes list
+        Taxons list
       </v-tab>
       <v-tab-item>
-        <v-card flat>
-          <v-card-text>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Vitae, labore temporibus? Consectetur, blanditiis. Fugit, unde id dignissimos in sed corporis,
-            velit necessitatibus optio quis provident aperiam reprehenderit voluptates ullam similique!
-          </v-card-text>
-        </v-card>
+        <Taxons></Taxons>
       </v-tab-item>
       <v-tab ripple>
-        Edges list
+        Interactions list
       </v-tab>
       <v-tab-item>
         <v-card flat>
@@ -110,13 +112,16 @@
 <script>
 import _ from 'lodash'
 import D3Network from 'vue-d3-network'
+import Taxons from './Taxons'
 
 export default {
   components: {
-    D3Network
+    D3Network,
+    Taxons
   },
   data () {
     return {
+      collection: [],
       nodes: [],
       links: [],
       nEdges: 0,
@@ -125,14 +130,19 @@ export default {
       options:
       {
         force: 2000,
-        nodeSize: 15,
+        nodeSize: 12,
         nodeLabels: true,
-        linkWidth: 3,
-        fontSize: 12,
+        linkWidth: 4,
+        fontSize: 11,
         size: {
-          h: 400
+          h: 340
         }
       }
+    }
+  },
+  conputed: {
+    getIdNet () {
+      return this.$store.state.selectNet
     }
   },
   methods: {
@@ -141,20 +151,17 @@ export default {
     },
     getInteractions () {
       return this.$store.state.interactions
-    }
-  },
-  mounted () {
-    // Get Taxa
-    this.$store.watch((idNet) => {
-      return this.$store.state.selectNet
     },
-    (idNet) => {
+    resetValues () {
       this.nodes = []
       this.links = []
       this.nEdges = 0
       this.nNodes = 0
       this.con = 0
+    },
+    updateNetwork (idNet) {
       this.$store.dispatch('loadTaxons', idNet).then(() => {
+        this.resetValues()
         let taxons = this.getTaxons()
         this.getTaxons().forEach(taxa => {
           this.nodes.push({
@@ -176,14 +183,22 @@ export default {
           })
         }).then(() => {
           this.nEdges = this.links.length
-          this.con = (this.nEdges / Math.pow(this.nodes.length, 2)).toFixed(2)
+          this.con = (this.nEdges / (this.nodes.length ** 2)).toFixed(2)
         })
           .catch((err) => {
-            console.log(err)
+            return err
           })
       }).then(() => {
         this.nNodes = this.nodes.length
       })
+    }
+  },
+  mounted () {
+    this.updateNetwork(this.$store.state.selectNet)
+    this.$store.watch((newId) => {
+      return this.$store.state.selectNet
+    }, (newId) => {
+      this.updateNetwork(newId)
     })
   }
 }
