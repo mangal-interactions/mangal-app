@@ -17,46 +17,47 @@
             <v-flex x6 d-flex pl-3 pr-3>
               <v-select
                 color="teal"
+                v-model="selectNet"
+                :items="$store.state.netCollection"
+                item-text="name" item-value="name" return-object
               ></v-select>
             </v-flex>
           </v-layout>
-          <v-flex xs12>
-            <v-card color="teal" class="white--text">
-              <v-layout justify-center>
-                <v-flex x12>
-                  <v-card-title primary-title>
-                    <div>
-                      <div class="headline">Supermodel</div>
-                      <div>Foster the People</div>
-                      <div>(2014)</div>
-                    </div>
-                  </v-card-title>
-                </v-flex>
-              </v-layout>
-            </v-card>
-          </v-flex>
+          <v-card color="teal" class="white--text">
+            <v-layout justify-center>
+              <v-flex x12 pa-2 class="text-md-center">
+                <div class="subheading font-weight-bold">{{ selectNet.name }}</div>
+                <div>Mangal network ID {{ selectNet.id }}</div>
+                <div><v-icon small color="white">fas fa-info-circle</v-icon> {{ selectNet.description }}</div>
+                <v-chip small v-if="selectNet.public" color="primary" text-color="white">Public</v-chip>
+                <v-chip small v-else color="orange" text-color="white">Private</v-chip>
+                <v-chip small v-if="!selectNet.all_interactions" color="red" text-color="white">Unrecorded absences</v-chip>
+                <v-chip small v-else color="green" text-color="white">Recorded abscences</v-chip>
+              </v-flex>
+            </v-layout>
+          </v-card>
           <v-layout align-center justify-center fill-height pt-3 row>
             <v-flex x3>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="font-weight-bold teal--text">Number of nodes</div>
-                  <p> {{ nNodes }} </p>
+                  <div class="body-2 font-weight-bold teal--text">Number of taxons</div>
+                  <p class="body-2"> {{ nNodes }} </p>
                 </div>
               </v-card>
             </v-flex>
             <v-flex x3>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="font-weight-bold teal--text">Number of edges</div>
-                  <p> {{ nEdges }} </p>
+                  <div class="body-2 font-weight-bold teal--text">Number of interactions</div>
+                  <p class="body-2"> {{ nEdges }} </p>
                 </div>
               </v-card>
             </v-flex>
             <v-flex x3>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="font-weight-bold teal--text">Connectance</div>
-                  <p>{{ con }}</p>
+                  <div class="body-2 font-weight-bold teal--text">Connectance</div>
+                  <p class="body-2">{{ con }}</p>
                 </div>
               </v-card>
             </v-flex>
@@ -76,34 +77,16 @@
         </v-container>
       </v-tab-item>
       <v-tab ripple>
-        Taxons list
-      </v-tab>
-      <v-tab-item>
-        <Taxons></Taxons>
-      </v-tab-item>
-      <v-tab ripple>
         Interactions list
       </v-tab>
       <v-tab-item>
-        <v-card flat>
-          <v-card-text>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Vitae, labore temporibus? Consectetur, blanditiis. Fugit, unde id dignissimos in sed corporis,
-            velit necessitatibus optio quis provident aperiam reprehenderit voluptates ullam similique!
-          </v-card-text>
-        </v-card>
+        <Interactions></Interactions>
       </v-tab-item>
       <v-tab ripple>
-        Citation
+        Dataset
       </v-tab>
       <v-tab-item>
-        <v-card flat>
-          <v-card-text>
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-            Vitae, labore temporibus? Consectetur, blanditiis. Fugit, unde id dignissimos in sed corporis,
-            velit necessitatibus optio quis provident aperiam reprehenderit voluptates ullam similique!
-          </v-card-text>
-        </v-card>
+        <Dataset></Dataset>
       </v-tab-item>
     </v-tabs>
   </div>
@@ -112,16 +95,18 @@
 <script>
 import _ from 'lodash'
 import D3Network from 'vue-d3-network'
-import Taxons from './Taxons'
+import Interactions from './Interactions'
+import Dataset from './Dataset'
 
 export default {
   components: {
     D3Network,
-    Taxons
+    Interactions,
+    Dataset
   },
   data () {
     return {
-      collection: [],
+      selectNet: this.getNetCollection()[0],
       nodes: [],
       links: [],
       nEdges: 0,
@@ -129,7 +114,7 @@ export default {
       con: 0,
       options:
       {
-        force: 2000,
+        force: 1000,
         nodeSize: 12,
         nodeLabels: true,
         linkWidth: 4,
@@ -140,9 +125,14 @@ export default {
       }
     }
   },
-  conputed: {
-    getIdNet () {
-      return this.$store.state.selectNet
+  watch: {
+    selectNet: function (newNet) {
+      this.selectNet = newNet
+      this.updateNetwork(newNet.id)
+      this.$store.dispatch('loadDataset', newNet.dataset_id).then(() => {
+        // Update ref
+        this.$store.dispatch('loadRef', this.$store.state.dataset.ref_id)
+      })
     }
   },
   methods: {
@@ -151,6 +141,9 @@ export default {
     },
     getInteractions () {
       return this.$store.state.interactions
+    },
+    getNetCollection () {
+      return this.$store.state.netCollection
     },
     resetValues () {
       this.nodes = []
@@ -194,11 +187,17 @@ export default {
     }
   },
   mounted () {
+    // init value on mounted
     this.updateNetwork(this.$store.state.selectNet)
+    this.$store.dispatch('loadDataset', this.getNetCollection()[0].dataset_id).then(() => {
+      // Update ref
+      this.$store.dispatch('loadRef', this.$store.state.dataset.ref_id)
+    })
+    // Passed the new selectNet on marker click event by watching the store
     this.$store.watch((newId) => {
       return this.$store.state.selectNet
     }, (newId) => {
-      this.updateNetwork(newId)
+      this.selectNet = this.getNetCollection()[0]
     })
   }
 }
