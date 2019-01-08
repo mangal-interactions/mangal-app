@@ -25,17 +25,25 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn depressed color="teal">
+        <v-btn depressed color="teal" href='#'>
+          Synthesis
+          <v-icon class="pa-2">fas fa-tachometer-alt</v-icon>
+        </v-btn>
+        <v-btn depressed color="teal" href='https://github.com/mangal-wg'>
           Code
           <v-icon class="pa-2">fab fa-github</v-icon>
         </v-btn>
         <v-btn depressed color="teal">
-          API
+          API Doc
           <v-icon class="pa-2">fas fa-code</v-icon>
         </v-btn>
-        <v-btn depressed color="teal">
-          Docs
-          <v-icon class="pa-2">fas fa-book</v-icon>
+        <v-btn depressed color="teal" href="https://github.com/mangal-wg/rmangal">
+          R package
+          <v-icon class="pa-2">fas fa-cube</v-icon>
+        </v-btn>
+        <v-btn depressed color="teal" href="https://github.com/PoisotLab/Mangal.jl">
+          Julia package
+          <v-icon class="pa-2">fas fa-cube</v-icon>
         </v-btn>
         <v-toolbar-side-icon @click.stop="drawerRight = !drawerRight"></v-toolbar-side-icon>
       </v-toolbar-items>
