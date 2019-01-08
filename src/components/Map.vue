@@ -22,9 +22,7 @@ export default {
         let records = netGroup.map(
           function (net) {
             return {
-              id: net.id,
-              date: net.date,
-              name: net.name
+              ...net
             }
           }
         )
@@ -52,7 +50,9 @@ export default {
     },
     storeNetworks (l) {
       let idNet = l.layer.feature.properties.measurements[0].id
+      let netCollection = l.layer.feature.properties.measurements
       this.$store.dispatch('setNet', idNet)
+      this.$store.dispatch('setNetCollection', netCollection)
     }
   },
   mounted () {
@@ -79,7 +79,7 @@ export default {
     }).then(() => {
       let layerNet = this.setLayerNetworks()
       layerNet.addTo(mangalMap)
-      mangalMap.fitBounds(layerNet.getBounds(), { padding: [ 20, 20 ] })
+      mangalMap.fitBounds(layerNet.getBounds(), { padding: [ 12, 12 ] })
       layerNet.on('click', this.storeNetworks)
     })
   }
