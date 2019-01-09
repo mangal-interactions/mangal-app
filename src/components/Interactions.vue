@@ -1,127 +1,80 @@
 <template>
-  <v-data-table
-      :headers="headers"
-      :items="desserts"
-      class="elevation-1"
-    >
-    <template slot="items" slot-scope="props">
-      <td>{{ props.item.name }}</td>
-      <td class="text-xs-right">{{ props.item.calories }}</td>
-      <td class="text-xs-right">{{ props.item.fat }}</td>
-      <td class="text-xs-right">{{ props.item.carbs }}</td>
-    </template>
-  </v-data-table>
+  <div id="app">
+    <v-data-table
+        :headers="headers"
+        :items="taxaInteractions"
+        class="elevation-1"
+        color="teal"
+        :rows-per-page-items="rowsPerPageItems"
+        :pagination.sync="pagination"
+      >
+      <template slot="items" slot-scope="props">
+        <td>{{ props.item.id }}</td>
+        <td class="text-xs-left"><a href="#">{{ props.item.taxon_1_desc.original_name }}</a></td>
+        <td class="text-xs-left"><a href="#">{{ props.item.taxon_2_desc.original_name }}</a></td>
+        <td class="text-xs-center">
+          <div v-if="props.item.direction === 'directed'"> <v-icon small color="green">far fa-check-circle</v-icon></div>
+          <div v-else> <v-icon small color="red">far fa-times-circle</v-icon></div>
+        </td>
+        <td class="text-xs-left text-capitalize">{{ props.item.type }}</td>
+      </template>
+    </v-data-table>
+  </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+// import axios from 'axios'
+import _ from 'lodash'
 export default {
   data () {
     return {
+      rowsPerPageItems: [10, 25, 50],
+      pagination: {
+        rowsPerPage: 25
+      },
       headers: [
-        {
-          text: 'Taxons list',
-          align: 'left',
-          sortable: true,
-          value: 'name',
-          rowsPerPage: 20
-        },
-        { text: 'Calories', value: 'calories' },
-        { text: 'Fat (g)', value: 'fat' },
-        { text: 'Carbs (g)', value: 'carbs' }
-      ],
-      desserts: [
-        {
-          value: false,
-          name: 'Frozen Yogurt',
-          calories: 159,
-          fat: 6.0,
-          carbs: 24,
-          protein: 4.0,
-          iron: '1%'
-        },
-        {
-          value: false,
-          name: 'Ice cream sandwich',
-          calories: 237,
-          fat: 9.0,
-          carbs: 37,
-          protein: 4.3,
-          iron: '1%'
-        },
-        {
-          value: false,
-          name: 'Eclair',
-          calories: 262,
-          fat: 16.0,
-          carbs: 23,
-          protein: 6.0,
-          iron: '7%'
-        },
-        {
-          value: false,
-          name: 'Cupcake',
-          calories: 305,
-          fat: 3.7,
-          carbs: 67,
-          protein: 4.3,
-          iron: '8%'
-        },
-        {
-          value: false,
-          name: 'Gingerbread',
-          calories: 356,
-          fat: 16.0,
-          carbs: 49,
-          protein: 3.9,
-          iron: '16%'
-        },
-        {
-          value: false,
-          name: 'Jelly bean',
-          calories: 375,
-          fat: 0.0,
-          carbs: 94,
-          protein: 0.0,
-          iron: '0%'
-        },
-        {
-          value: false,
-          name: 'Lollipop',
-          calories: 392,
-          fat: 0.2,
-          carbs: 98,
-          protein: 0,
-          iron: '2%'
-        },
-        {
-          value: false,
-          name: 'Honeycomb',
-          calories: 408,
-          fat: 3.2,
-          carbs: 87,
-          protein: 6.5,
-          iron: '45%'
-        },
-        {
-          value: false,
-          name: 'Donut',
-          calories: 452,
-          fat: 25.0,
-          carbs: 51,
-          protein: 4.9,
-          iron: '22%'
-        },
-        {
-          value: false,
-          name: 'KitKat',
-          calories: 518,
-          fat: 26.0,
-          carbs: 65,
-          protein: 7,
-          iron: '6%'
-        }
+        { text: 'Taxa ID', value: 'id' },
+        { text: 'From', value: 'taxon_1_desc.original_name' }, // Set Hyperlink to ITIS on click
+        { text: 'To', value: 'taxon_2_desc.original_name' }, // Set Hyperlink to ITIS on click
+        { text: 'Directed?', value: 'direction' },
+        { text: 'Type', value: 'type' },
+        { text: 'Traits available', value: 'carbs' }
       ]
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'getInteractions',
+      'getTaxons'
+    ]),
+    taxaInteractions () {
+      let taxaInteractions = this.getInteractions.map((interac) => {
+        return {
+          ...interac,
+          taxon_1_desc: _.find(this.getTaxons, { id: interac.taxon_1 }),
+          taxon_2_desc: _.find(this.getTaxons, { id: interac.taxon_2 })
+        }
+      })
+
+      // taxaInteractions.map((interac) => {
+      //   interac.taxo_1 = axios.get('/taxonomy/' + interac.taxon_1_desc.taxo_id).then((result) => {
+      //     return result.data
+      //   })
+      //   interac.taxo_2 = axios.get('/taxonomy/' + interac.taxon_2_desc.taxo_id).then((result) => {
+      //     return result.data
+      //   })
+      //   return interac
+      // })
+
+      return taxaInteractions
     }
   }
 }
 </script>
+
+<style>
+table.v-table tbody td:first-child, table.v-table tbody td:not(:first-child), table.v-table tbody th:first-child, table.v-table tbody th:not(:first-child), table.v-table thead td:first-child, table.v-table thead td:not(:first-child), table.v-table thead th:first-child, table.v-table thead th:not(:first-child) {
+    padding: 0 10px
+}
+</style>
