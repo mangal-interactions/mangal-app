@@ -11,13 +11,11 @@
       <v-tab-item>
         <v-container pa-0>
           <v-layout row wrap fill-height align-center>
-            <v-flex x4>
-              <h3 class="text-xs-center">Select network</h3>
-            </v-flex>
-            <v-flex x6 d-flex pl-3 pr-3>
+            <v-flex x12 pl-4 pr-4 pt-2>
               <v-select
                 color="teal"
                 v-model="selectNet"
+                label="Select network"
                 :items="$store.state.netCollection"
                 item-text="name" item-value="name" return-object
               ></v-select>
@@ -41,7 +39,7 @@
               <v-card flat color="white">
                 <div class="text-md-center">
                   <div class="body-2 font-weight-bold teal--text">Number of taxons</div>
-                  <p class="body-2"> {{ nNodes }} </p>
+                  <p class="body-2" style="color:#2c3e50"> {{ nNodes }} </p>
                 </div>
               </v-card>
             </v-flex>
@@ -49,7 +47,7 @@
               <v-card flat color="white">
                 <div class="text-md-center">
                   <div class="body-2 font-weight-bold teal--text">Number of interactions</div>
-                  <p class="body-2"> {{ nEdges }} </p>
+                  <p class="body-2" style="color:#2c3e50"> {{ nEdges }} </p>
                 </div>
               </v-card>
             </v-flex>
@@ -57,7 +55,7 @@
               <v-card flat color="white">
                 <div class="text-md-center">
                   <div class="body-2 font-weight-bold teal--text">Connectance</div>
-                  <p class="body-2">{{ con }}</p>
+                  <p class="body-2" style="color:#2c3e50">{{ con }}</p>
                 </div>
               </v-card>
             </v-flex>
@@ -114,10 +112,10 @@ export default {
       con: 0,
       options:
       {
-        force: 1000,
-        nodeSize: 12,
+        force: 1500,
+        nodeSize: 14,
         nodeLabels: true,
-        linkWidth: 4,
+        linkWidth: 3,
         fontSize: 11,
         size: {
           h: 340
