@@ -17,7 +17,6 @@ export default {
     },
     setLayerNetworks () {
       let layerNet = L.featureGroup()
-
       this.getMapCollection().forEach(netGroup => {
         let records = netGroup.map(
           function (net) {
@@ -45,6 +44,7 @@ export default {
         L.geoJSON(feature)
           .bindPopup(popup)
           .addTo(layerNet)
+          .openPopup()
       })
       return layerNet
     },
@@ -79,8 +79,10 @@ export default {
     }).then(() => {
       let layerNet = this.setLayerNetworks()
       layerNet.addTo(mangalMap)
-      mangalMap.fitBounds(layerNet.getBounds(), { padding: [ 12, 12 ] })
+      mangalMap.fitBounds(layerNet.getBounds())
       layerNet.on('click', this.storeNetworks)
+    }).then(() => {
+      this.$store.dispatch('openStatePane', true)
     })
   }
 }

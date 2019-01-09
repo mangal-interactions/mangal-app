@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer fixed v-model="drawerRight" right clipped app width="500">
+    <v-navigation-drawer fixed v-model="$store.state.drawerRight" right clipped app width="600">
       <v-layout wrap fill-height row align-center v-if="$store.state.loading">
         <v-flex x12 class="text-xs-center">
           <v-progress-circular
@@ -45,7 +45,7 @@
           Julia package
           <v-icon class="pa-2">fas fa-cube</v-icon>
         </v-btn>
-        <v-toolbar-side-icon @click.stop="drawerRight = !drawerRight"></v-toolbar-side-icon>
+        <v-toolbar-side-icon @click="changeStatePane"></v-toolbar-side-icon>
       </v-toolbar-items>
     </v-toolbar>
   </div>
@@ -55,9 +55,9 @@
 import Network from './Network'
 
 export default {
-  data () {
-    return {
-      drawerRight: true
+  methods: {
+    changeStatePane () {
+      this.$store.dispatch('openStatePane', !this.$store.state.drawerRight)
     }
   },
   components: {
