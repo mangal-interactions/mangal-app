@@ -11,7 +11,6 @@ export default {
 </script>
 
 <template>
-<div id="app">
   <v-app>
     <Navig></Navig>
     <v-content>
@@ -20,5 +19,4 @@ export default {
       </v-container>
     </v-content>
   </v-app>
-</div>
 </template>

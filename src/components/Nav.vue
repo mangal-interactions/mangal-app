@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer fixed v-model="$store.state.drawerRight" right clipped app width="600">
+    <v-navigation-drawer fixed v-model="$store.state.drawerRight" right clipped app width="650">
       <v-layout wrap fill-height row align-center v-if="$store.state.loading">
         <v-flex x12 class="text-xs-center">
           <v-progress-circular
