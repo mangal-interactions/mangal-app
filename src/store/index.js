@@ -209,7 +209,6 @@ const actions = {
                   commit('storeNetworks', response.data)
                 }
               )).then(() => {
-                commit('changeLoadingState', false)
                 return resolve()
               }).catch((err) => {
                 this.$log.error(err)
@@ -283,6 +282,9 @@ const actions = {
   },
   setNetCollection ({ commit }, netCollection) {
     return commit('setNetCollection', netCollection)
+  },
+  setLoading ({ commit }, status) {
+    commit('changeLoadingState', status)
   }
 }
 

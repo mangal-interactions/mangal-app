@@ -8,10 +8,17 @@
         :rows-per-page-items="rowsPerPageItems"
         :pagination.sync="pagination"
       >
-      <!--
-      #{{ props.item.taxonomy_taxon_1.eol }}
-      #{{ props.item.taxonomy_taxon_1.ncbi }}
-      -->
+      <template slot="no-data">
+        <v-layout wrap row>
+          <v-flex x4 class="text-xs-left pt-4">
+            Data fetching...
+          </v-flex>
+          <v-progress-linear
+            indeterminate
+            color="teal"
+          ></v-progress-linear>
+        </v-layout>
+      </template>
       <template slot="items" slot-scope="props">
         <td>{{ props.item.id }}</td>
         <td class="text-xs-left">

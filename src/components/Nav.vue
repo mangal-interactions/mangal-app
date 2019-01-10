@@ -1,17 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer fixed v-model="$store.state.drawerRight" right clipped app width="650">
-      <v-layout wrap fill-height row align-center v-if="$store.state.loading">
-        <v-flex x12 class="text-xs-center">
-          <v-progress-circular
-            :size="70"
-            :width="7"
-            color="teal"
-            indeterminate
-          ></v-progress-circular>
-          <p>Fetching data...</p>
-        </v-flex>
-      </v-layout>
+    <v-navigation-drawer style="z-index:9999" fixed v-model="$store.state.drawerRight" right clipped app width="650">
       <v-layout wrap row v-if="!$store.state.loading">
         <v-flex x12 class="text-xs-center">
           <Network></Network>

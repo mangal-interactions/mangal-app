@@ -83,6 +83,7 @@ export default {
       layerNet.on('click', this.storeNetworks)
     }).then(() => {
       this.$store.dispatch('openStatePane', true)
+      this.$store.dispatch('setLoading', false)
     })
   }
 }
