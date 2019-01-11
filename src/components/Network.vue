@@ -13,7 +13,7 @@
           <v-layout row wrap fill-height align-center>
             <v-flex x12 pl-4 pr-4 pt-2>
               <v-select
-                color="teal"
+                color="primary"
                 v-model="selectNet"
                 label="Select network"
                 :items="$store.state.netCollection"
@@ -21,13 +21,13 @@
               ></v-select>
             </v-flex>
           </v-layout>
-          <v-card color="teal" class="white--text">
+          <v-card color="primary" class="white--text">
             <v-layout justify-center>
               <v-flex x12 pa-2 class="text-md-center">
                 <div class="subheading font-weight-bold">{{ selectNet.name }}</div>
                 <div>Mangal network ID {{ selectNet.id }}</div>
                 <div><v-icon small color="white">fas fa-info-circle</v-icon> {{ selectNet.description }}</div>
-                <v-chip small v-if="selectNet.public" color="primary" text-color="white">Public</v-chip>
+                <v-chip small v-if="selectNet.public" color="teal" text-color="white">Public</v-chip>
                 <v-chip small v-else color="orange" text-color="white">Private</v-chip>
                 <v-chip small v-if="!selectNet.all_interactions" color="red" text-color="white">Unrecorded absences</v-chip>
                 <v-chip small v-else color="green" text-color="white">Recorded abscences</v-chip>
@@ -38,7 +38,7 @@
             <v-flex x3>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="body-2 font-weight-bold teal--text">Number of taxons</div>
+                  <div class="body-2 font-weight-bold primary--text">Number of taxons</div>
                   <p class="body-2" style="color:#2c3e50"> {{ nNodes }} </p>
                 </div>
               </v-card>
@@ -46,7 +46,7 @@
             <v-flex x3>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="body-2 font-weight-bold teal--text">Number of interactions</div>
+                  <div class="body-2 font-weight-bold primary--text">Number of interactions</div>
                   <p class="body-2" style="color:#2c3e50"> {{ nEdges }} </p>
                 </div>
               </v-card>
@@ -54,13 +54,13 @@
             <v-flex x3>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="body-2 font-weight-bold teal--text">Connectance</div>
+                  <div class="body-2 font-weight-bold primary--text">Connectance</div>
                   <p class="body-2" style="color:#2c3e50">{{ con }}</p>
                 </div>
               </v-card>
             </v-flex>
             <v-flex x3>
-              <v-btn outline fab dark color="teal">
+              <v-btn outline fab dark color="primary">
                 <v-icon dark>fas fa-download</v-icon>
               </v-btn>
             </v-flex>
@@ -158,7 +158,7 @@ export default {
           this.nodes.push({
             id: taxa.id,
             name: taxa.original_name,
-            _color: 'teal'
+            _color: '#004e6b'
           })
         })
         return _.map(taxons, 'id')
@@ -169,7 +169,7 @@ export default {
               id: interac.id,
               sid: interac.taxon_1,
               tid: interac.taxon_2,
-              _color: '#0080804a'
+              _color: '#004e6b4a'
             })
           })
         }).then(() => {

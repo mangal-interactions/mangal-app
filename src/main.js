@@ -35,7 +35,11 @@ L.Icon.Default.mergeOptions({
 })
 
 Vue.use(Vuetify, {
-  iconfont: 'fa'
+  iconfont: 'fa',
+  theme: {
+    primary: '#004e6b',
+    secondary: '#008c77'
+  }
 })
 Vue.use(VueLogger, LoggerOptions)
 
