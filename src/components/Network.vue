@@ -81,6 +81,20 @@
         <Interactions></Interactions>
       </v-tab-item>
       <v-tab ripple>
+        Node traits
+      </v-tab>
+      <v-tab-item>
+        <v-flex x12 pl-4 pr-4 pt-2>
+          <v-alert
+            :value="true"
+            color="primary"
+            style="font-style:italic"
+          >
+            Coming soon...
+          </v-alert>
+        </v-flex>
+      </v-tab-item>
+      <v-tab ripple>
         Dataset
       </v-tab>
       <v-tab-item>
@@ -167,8 +181,8 @@ export default {
           this.getInteractions().forEach(interac => {
             this.links.push({
               id: interac.id,
-              sid: interac.taxon_1,
-              tid: interac.taxon_2,
+              sid: interac.node_from,
+              tid: interac.node_to,
               _color: '#004e6b4a'
             })
           })

@@ -22,29 +22,24 @@
       <template slot="items" slot-scope="props">
         <td>{{ props.item.id }}</td>
         <td class="text-xs-left">
-          <div class="font-weight-bold">{{ props.item.taxonomy_taxon_1.name }}</div>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_1.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_taxon_1.bold + '&dataTypes=basic'">BOLD</a>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_1.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_taxon_1.tsn">ITIS</a>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_1.eol" :href="'https://eol.org/pages/' + props.item.taxonomy_taxon_1.eol">EOL</a>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_1.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_taxon_1.ncbi">NCBI</a>
+          <div class="font-weight-bold">{{ props.item.node_1_desc.original_name }}</div>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_1" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_node_1.bold + '&dataTypes=basic'">BOLD</a>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_1" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_node_1.tsn">ITIS</a>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_1" :href="'https://eol.org/pages/' + props.item.taxonomy_node_1.eol">EOL</a>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_1" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_node_1.ncbi">NCBI</a>
         </td>
         <td class="text-xs-left">
-          <div class="font-weight-bold">{{ props.item.taxonomy_taxon_2.name }}</div>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_2.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_taxon_2.bold + '&dataTypes=basic'">BOLD</a>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_2.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_taxon_2.tsn">ITIS</a>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_2.eol" :href="'https://eol.org/pages/' + props.item.taxonomy_taxon_2.eol">EOL</a>
-          <a class="caption blue--text" v-if="props.item.taxonomy_taxon_2.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_taxon_2.ncbi">NCBI</a>
+          <div class="font-weight-bold">{{ props.item.node_2_desc.original_name }}</div>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_2" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_node_2.bold + '&dataTypes=basic'">BOLD</a>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_2" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_node_2.tsn">ITIS</a>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_2" :href="'https://eol.org/pages/' + props.item.taxonomy_node_2.eol">EOL</a>
+          <a class="caption blue--text" v-if="props.item.taxonomy_node_2" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_node_2.ncbi">NCBI</a>
         </td>
         <td class="text-xs-center">
           <div v-if="props.item.direction === 'directed'"> <v-icon small color="green">far fa-check-circle</v-icon></div>
           <div v-else> <v-icon small color="red">far fa-times-circle</v-icon></div>
         </td>
         <td class="text-xs-left text-capitalize">{{ props.item.type }}</td>
-        <td class="text-xs-left text-capitalize font-italic caption">
-          <div v-for="trait in props.item.traits_available" v-bind:key="trait">
-            {{ trait }}
-          </div>
-        </td>
       </template>
     </v-data-table>
   </div>
@@ -63,11 +58,10 @@ export default {
       },
       headers: [
         { text: 'Taxa ID', value: 'id' },
-        { text: 'From', value: 'taxonomy_taxon_1.name' }, // Set Hyperlink to ITIS on click
-        { text: 'To', value: 'taxonomy_taxon_2.name' }, // Set Hyperlink to ITIS on click
+        { text: 'From', value: 'node_1_desc.original_name' }, // Set Hyperlink to ITIS on click
+        { text: 'To', value: 'node_2_desc.original_name' }, // Set Hyperlink to ITIS on click
         { text: 'Directed?', value: 'direction' },
-        { text: 'Type', value: 'type' },
-        { text: 'Traits available', value: 'traits_available' }
+        { text: 'Type interaction', value: 'type' }
       ]
     }
   },
@@ -79,32 +73,30 @@ export default {
       'getTaxonomy'
     ]),
     taxaInteractions () {
-      if (this.getInteractions.length > 0 && this.getTaxons.length > 0 && this.getTraits.length > 0 && this.getTaxonomy.length > 0) {
-        let taxaInteractions = this.getInteractions.map((interac) => {
-          let traits = _.chain(this.getTraits)
-            .filter((trait) => {
-              return trait.taxon_id === interac.taxon_1 || trait.taxon_id === interac.taxon_2
-            })
-            .map('attributes')
-            .map('name')
-            .value()
+      let taxaInteractions = this.getInteractions.map((interac) => {
+        let TaxonDesc1 = _.find(this.getTaxons, { id: interac.node_from })
+        let TaxonDesc2 = _.find(this.getTaxons, { id: interac.node_to })
 
-          let TaxonDesc1 = _.find(this.getTaxons, { id: interac.taxon_1 })
-          let TaxonDesc2 = _.find(this.getTaxons, { id: interac.taxon_2 })
-          let TaxonomyDesc1 = _.find(this.getTaxonomy, { id: TaxonDesc1.taxo_id })
-          let TaxonomyDesc2 = _.find(this.getTaxonomy, { id: TaxonDesc2.taxo_id })
+        let TaxonomyDesc1 = null
+        let TaxonomyDesc2 = null
 
-          return {
-            ...interac,
-            taxon_1_desc: TaxonDesc1,
-            taxon_2_desc: TaxonDesc2,
-            taxonomy_taxon_1: TaxonomyDesc1,
-            taxonomy_taxon_2: TaxonomyDesc2,
-            traits_available: traits
-          }
-        })
-        return taxaInteractions
-      }
+        if (TaxonDesc1) {
+          TaxonomyDesc1 = _.find(this.getTaxonomy, { id: TaxonDesc1.taxonomy_id })
+        }
+        if (TaxonDesc2) {
+          TaxonomyDesc2 = _.find(this.getTaxonomy, { id: TaxonDesc2.taxonomy_id })
+        }
+
+        return {
+          ...interac,
+          node_1_desc: TaxonDesc1,
+          node_2_desc: TaxonDesc2,
+          taxonomy_node_1: TaxonomyDesc1,
+          taxonomy_node_2: TaxonomyDesc2
+        }
+      })
+      console.log(taxaInteractions)
+      return taxaInteractions
     }
   }
 }

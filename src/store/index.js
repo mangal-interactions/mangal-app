@@ -18,8 +18,8 @@ const state = {
   traits: [],
   drawerRight: false,
   // Default loading values
-  selectNet: 374,
-  netCollection: [{'id': 374, 'name': 'Kolpelke 352', 'date': '1999-06-28T04:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [6.8666666667, 51.1166666667]}, 'description': '1999-06-28, Germany, Nordrh.-Westfalen, Urdenbach, Urdenbacher KÃ¤mpe', 'public': true, 'all_interactions': false, 'created_at': '2018-04-13T14:57:34.606Z', 'updated_at': '2018-04-13T14:57:34.606Z', 'dataset_id': 18, 'environment_id': 355, 'user_id': 2, 'group': '6.8666666667_51.1166666667'}, {'id': 393, 'name': 'Kolpelke 371', 'date': '1999-09-13T04:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [6.8666666667, 51.1166666667]}, 'description': '1999-09-13, Germany, Nordrh.-Westfalen, Urdenbach, Urdenbacher KÃ¤mpe', 'public': true, 'all_interactions': false, 'created_at': '2018-04-13T15:02:03.326Z', 'updated_at': '2018-04-13T15:02:03.326Z', 'dataset_id': 18, 'environment_id': 374, 'user_id': 2, 'group': '6.8666666667_51.1166666667'}, {'id': 397, 'name': 'Kolpelke 375', 'date': '1999-07-01T04:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [6.8666666667, 51.1166666667]}, 'description': '1999-07-01, Germany, Nordrh.-Westfalen, Urdenbach, Urdenbacher KÃ¤mpe', 'public': true, 'all_interactions': false, 'created_at': '2018-04-13T15:02:48.629Z', 'updated_at': '2018-04-13T15:02:48.629Z', 'dataset_id': 18, 'environment_id': 378, 'user_id': 2, 'group': '6.8666666667_51.1166666667'}, {'id': 398, 'name': 'Kolpelke 376', 'date': '1999-06-30T04:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [6.8666666667, 51.1166666667]}, 'description': '1999-06-30, Germany, Nordrh.-Westfalen, Urdenbach, Urdenbacher KÃ¤mpe', 'public': true, 'all_interactions': false, 'created_at': '2018-04-13T15:02:58.624Z', 'updated_at': '2018-04-13T15:02:58.624Z', 'dataset_id': 18, 'environment_id': 379, 'user_id': 2, 'group': '6.8666666667_51.1166666667'}],
+  selectNet: 1440,
+  netCollection: [{'id': 1440, 'name': 'alcorlo_et_al_2001_lake_la_muerte_1994-11-01', 'date': '1994-11-01T05:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [-0.2617804879778, 41.401557018825]}, 'description': 'The biotic interactions within the Lake_La_Muerte, Los Monegros, Spain', 'public': true, 'all_interactions': false, 'created_at': '2019-02-27T23:51:07.287Z', 'updated_at': '2019-02-27T23:51:07.287Z', 'dataset_id': 82, 'environment_id': null, 'user_id': 4, 'group': '-0.2617804879778_41.401557018825'}, {'id': 1442, 'name': 'alcorlo_et_al_2001_lake_la_muerte_1996-01-01', 'date': '1996-01-01T05:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [-0.2617804879778, 41.401557018825]}, 'description': 'The biotic interactions within the Lake_La_Muerte, Los Monegros, Spain', 'public': true, 'all_interactions': false, 'created_at': '2019-02-27T23:51:25.340Z', 'updated_at': '2019-02-27T23:51:25.340Z', 'dataset_id': 82, 'environment_id': null, 'user_id': 4, 'group': '-0.2617804879778_41.401557018825'}],
   loading: true
 }
 
@@ -108,7 +108,7 @@ const actions = {
   },
   loadTaxonomy ({ commit }, taxons) {
     return new Promise((resolve, reject) => {
-      let uqTaxons = _.chain(taxons).map('taxo_id').uniq().value()
+      let uqTaxons = _.chain(taxons).map('taxonomy_id').uniq().compact().value()
       let requests = []
       for (let i = 0; i <= uqTaxons.length - 1; i++) {
         requests.push(axios.get(process.env.BASE_URL + '/taxonomy/' + uqTaxons[i]))
@@ -135,7 +135,7 @@ const actions = {
       let requestsAttr = []
       let traits = []
       for (let i = 0; i < uqTaxons.length; i++) {
-        requestsTraits.push(axios.get(process.env.BASE_URL + '/trait?taxon_id=' + uqTaxons[i]))
+        requestsTraits.push(axios.get(process.env.BASE_URL + '/trait?node_id=' + uqTaxons[i]))
       }
       Promise.all(requestsTraits)
         .then(responses => responses.forEach(
@@ -179,6 +179,9 @@ const actions = {
       // Create collection
       let netCollection = _
         .chain(state.networks)
+        .remove((net) => {
+          return net.localisation !== null
+        })
         .each(function (net) {
           net.group = net.localisation.coordinates.join('_')
         })
@@ -191,7 +194,7 @@ const actions = {
   loadNetworks ({ commit }) {
     commit('emptyNetworks')
     return new Promise((resolve, reject) => {
-      axios.get(process.env.BASE_URL + '/network?q=Kolpelke%&page=0')
+      axios.get(process.env.BASE_URL + '/network?page=0')
         .then(response => {
           // store page 0
           commit('storeNetworks', response.data)
@@ -201,7 +204,7 @@ const actions = {
           if (nPages > 0 && nPages !== Infinity) {
             let requests = []
             for (let i = 1; i <= nPages; i++) {
-              requests.push(axios.get(process.env.BASE_URL + '/network?q=Kolpelke%&page=' + i))
+              requests.push(axios.get(process.env.BASE_URL + '/network?page=' + i))
             }
             Promise.all(requests)
               .then(responses => responses.forEach(
@@ -225,7 +228,7 @@ const actions = {
       for (let index = 0; index < ids.length; index++) {
         const id = ids[index]
         requests.push(
-          axios.get(process.env.BASE_URL + '/interaction?taxon_1=' + id + '&page=0')
+          axios.get(process.env.BASE_URL + '/interaction?node_from=' + id)
         )
       }
       // TODO: Only page 0 covered by the code
@@ -246,7 +249,7 @@ const actions = {
   },
   loadTaxons ({ commit, dispatch }, idNet) {
     return new Promise((resolve, reject) => {
-      axios.get(process.env.BASE_URL + '/taxon?network_id=' + idNet + '&page=0')
+      axios.get(process.env.BASE_URL + '/node?network_id=' + idNet)
         .then(response => {
           commit('emptyTaxons')
           commit('emptyTaxonomy')
@@ -261,7 +264,7 @@ const actions = {
           if (nPages > 0 && nPages !== Infinity) {
             let requests = []
             for (let i = 1; i <= nPages; i++) {
-              requests.push(axios.get(process.env.BASE_URL + '/taxon?network_id=' + idNet + '&page=' + i))
+              requests.push(axios.get(process.env.BASE_URL + '/node?network_id=' + idNet + '&page=' + i))
             }
             Promise.all(requests)
               .then(responses => responses.forEach(
@@ -289,6 +292,12 @@ const actions = {
 }
 
 const getters = {
+  getNetCollection: (state) => {
+    return state.netCollection
+  },
+  getNetSelected: (state) => {
+    return state.selectNet
+  },
   getRef: (state) => {
     return state.ref
   },

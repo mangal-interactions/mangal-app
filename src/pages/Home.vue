@@ -16,7 +16,7 @@ export default {
       v-model="$store.state.loading"
       hide-overlay
       persistent
-      width="400"
+      width="300"
       style="z-index:9999"
     >
       <v-card

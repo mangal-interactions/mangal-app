@@ -1,13 +1,15 @@
 <template>
-  <v-flex x12 fill-height>
-    <div id="mangalMap"></div>
-  </v-flex>
+  <v-layout>
+    <v-flex x12 fill-height>
+      <div id="mangalMap"></div>
+    </v-flex>
+  </v-layout>
 </template>
 
 <script>
 // import axios from 'axios'
 import 'leaflet'
-import 'leaflet.markercluster'
+import moment from 'moment'
 const L = window.L
 
 export default {
@@ -37,14 +39,13 @@ export default {
         }
         let popup = '<h3>List of networks</h3>'
         feature.properties.measurements.forEach((meas) => {
-          popup = popup.concat('<div>', meas.name, ' - ', new Date(meas.date).getFullYear(), '</div>')
+          popup = popup.concat('<div>', meas.name, ' - ', moment(meas.date).format('YYYY-MM-DD'), '</div>')
         })
 
         // Add feature to the map
         L.geoJSON(feature)
           .bindPopup(popup)
           .addTo(layerNet)
-          .openPopup()
       })
       return layerNet
     },
@@ -57,7 +58,7 @@ export default {
   },
   mounted () {
     // Init map
-    let mangalMap = L.map('mangalMap').setView([0, 0], 0)
+    let mangalMap = L.map('mangalMap', { minZoom: 2 })
     let mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
         '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
