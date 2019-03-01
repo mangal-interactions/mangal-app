@@ -20,6 +20,9 @@
         <div><span class="font-weight-bold body-2">Last update:</span>
           {{ formatUpdate }}
         </div>
+        <div>
+          <span class="font-weight-bold body-2">Number of networks attached:</span> Coming soon
+        </div>
       </div>
       <div class="title pt-4 teal--text">Citation</div>
       <v-divider class="pb-2"></v-divider>
@@ -30,10 +33,10 @@
       <v-divider class="pb-2"></v-divider>
       <v-flex x12>
         <div v-if="getRef" class="text-md-left">
-          <div class="font-weight-bold body-2">Data URL</div><a :href="getRef.data_url">{{ getRef.data_url }}</a>
+          <div class="font-weight-bold body-2">Data URL</div><a :href="getRef.data_url || null">{{ getRef.data_url || "None" }}</a>
         </div>
         <div v-if="getRef" class="text-md-left">
-          <div class="font-weight-bold body-2">Paper URL</div><a :href="getRef.paper_url">{{ getRef.paper_url }}</a>
+          <div class="font-weight-bold body-2">Paper URL</div><a :href="getRef.paper_url || null">{{ getRef.paper_url || "None"}}</a>
         </div>
       </v-flex>
     </v-container>

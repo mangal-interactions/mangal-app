@@ -39,7 +39,8 @@ export default {
         }
         let popup = '<h3>List of networks</h3>'
         feature.properties.measurements.forEach((meas) => {
-          popup = popup.concat('<div>', meas.name, ' - ', moment(meas.date).format('YYYY-MM-DD'), '</div>')
+          let formatDate = meas.date ? moment(meas.date).format('YYYY-MM-DD') : 'Unknown'
+          popup = popup.concat('<div>', meas.name, ' - ', formatDate, '</div>')
         })
 
         // Add feature to the map

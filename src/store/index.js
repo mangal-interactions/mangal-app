@@ -16,10 +16,11 @@ const state = {
   taxons: [],
   taxonomy: [],
   traits: [],
+  attributes: [],
   drawerRight: false,
   // Default loading values
-  selectNet: 1440,
-  netCollection: [{'id': 1440, 'name': 'alcorlo_et_al_2001_lake_la_muerte_1994-11-01', 'date': '1994-11-01T05:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [-0.2617804879778, 41.401557018825]}, 'description': 'The biotic interactions within the Lake_La_Muerte, Los Monegros, Spain', 'public': true, 'all_interactions': false, 'created_at': '2019-02-27T23:51:07.287Z', 'updated_at': '2019-02-27T23:51:07.287Z', 'dataset_id': 82, 'environment_id': null, 'user_id': 4, 'group': '-0.2617804879778_41.401557018825'}, {'id': 1442, 'name': 'alcorlo_et_al_2001_lake_la_muerte_1996-01-01', 'date': '1996-01-01T05:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [-0.2617804879778, 41.401557018825]}, 'description': 'The biotic interactions within the Lake_La_Muerte, Los Monegros, Spain', 'public': true, 'all_interactions': false, 'created_at': '2019-02-27T23:51:25.340Z', 'updated_at': '2019-02-27T23:51:25.340Z', 'dataset_id': 82, 'environment_id': null, 'user_id': 4, 'group': '-0.2617804879778_41.401557018825'}],
+  selectNet: 1102,
+  netCollection: [{'id': 1102, 'name': 'bulman_2001', 'date': '1993-07-01T04:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [120.433333, 22.45]}, 'description': 'Dietary matrix of  demersal fishes of the south-eastern Australian shelf', 'public': true, 'all_interactions': false, 'created_at': '2019-02-26T23:22:13.839Z', 'updated_at': '2019-02-26T23:22:13.839Z', 'dataset_id': 58, 'environment_id': null, 'user_id': null, 'group': '120.433333_22.45'}, {'id': 89, 'name': 'lin_2006', 'date': '2006-01-01T05:00:00.000Z', 'localisation': {'type': 'Point', 'coordinates': [120.433333, 22.45]}, 'description': 'Dietary matrix of the Tapong Bay', 'public': true, 'all_interactions': false, 'created_at': '2019-02-23T21:33:15.418Z', 'updated_at': '2019-02-23T21:33:15.418Z', 'dataset_id': 25, 'environment_id': null, 'user_id': null, 'group': '120.433333_22.45'}],
   loading: true
 }
 
@@ -85,6 +86,13 @@ const mutations = {
   // Reference
   storeRef (state, ref) {
     state.ref = ref
+  },
+  // Attributes
+  emptyAttributes (state) {
+    state.attributes = []
+  },
+  storeAttributes (state, attributes) {
+    state.attributes = attributes
   }
 }
 
@@ -221,6 +229,19 @@ const actions = {
         })
     })
   },
+  loadAttributes ({ commit }) {
+    return new Promise((resolve, reject) => {
+      commit('emptyAttributes')
+      axios.get(process.env.BASE_URL + '/attribute').then((response) => {
+        commit('storeAttributes', response.data)
+      }).then(() => {
+        return resolve()
+      }).catch((err) => {
+        this.$log.error(err)
+        return reject(err)
+      })
+    })
+  },
   loadInteractions ({ commit }, ids) {
     return new Promise((resolve, reject) => {
       commit('emptyInteractions')
@@ -309,6 +330,9 @@ const getters = {
   },
   getTaxons: (state) => {
     return state.taxons
+  },
+  getAttributes: (state) => {
+    return state.attributes
   },
   getTraits: (state) => {
     return state.traits

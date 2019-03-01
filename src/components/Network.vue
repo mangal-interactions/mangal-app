@@ -24,9 +24,8 @@
           <v-card color="primary" class="white--text">
             <v-layout justify-center>
               <v-flex x12 pa-2 class="text-md-center">
-                <div class="subheading font-weight-bold">{{ selectNet.name }}</div>
-                <div>Mangal network ID {{ selectNet.id }}</div>
-                <div><v-icon small color="white">fas fa-info-circle</v-icon> {{ selectNet.description }}</div>
+                <div class="subheading font-weight-bold">{{ selectNet.description }}</div>
+                <div> <v-icon small color="white">fas fa-info-circle</v-icon> Mangal network ID #{{ selectNet.id }}, measurement date: {{ selectNet.date | moment }}</div>
                 <v-chip small v-if="selectNet.public" color="teal" text-color="white">Public</v-chip>
                 <v-chip small v-else color="orange" text-color="white">Private</v-chip>
                 <v-chip small v-if="!selectNet.all_interactions" color="red" text-color="white">Unrecorded absences</v-chip>
@@ -75,24 +74,83 @@
         </v-container>
       </v-tab-item>
       <v-tab ripple>
+        Node properties
+      </v-tab>
+      <v-tab-item>
+        <div>
+          <v-container class="text-md-left">
+             <div class="title teal--text pt-4">Taxon resolved <span class="caption">(Beta)</span></div>
+             <v-divider class="pb-4"></v-divider>
+              <div>
+              <v-layout row wrap>
+                <v-flex xs3 text-xs-center>
+                  <div class="font-weight-bold body-2">ITIS</div>
+                </v-flex>
+                <v-flex xs3 text-xs-center>
+                  <div class="font-weight-bold body-2">BOLD</div>
+                </v-flex>
+                <v-flex xs3 text-xs-center>
+                  <div class="font-weight-bold body-2">EOL</div>
+                </v-flex>
+                <v-flex xs3 text-xs-center>
+                  <div class="font-weight-bold body-2">NCBI</div>
+                </v-flex>
+                <v-flex xs3 text-xs-center>
+                  <v-progress-circular
+                    :rotate="360"
+                    :size="100"
+                    :width="15"
+                    :value="60"
+                    color="teal"
+                  >
+                    {{ "60%" }}
+                  </v-progress-circular>
+                </v-flex>
+                <v-flex xs3 text-xs-center>
+                  <v-progress-circular
+                    :rotate="360"
+                    :size="100"
+                    :width="15"
+                    :value="20"
+                    color="orange"
+                  >
+                    {{ "20%" }}
+                  </v-progress-circular>
+                </v-flex>
+                <v-flex xs3 text-xs-center>
+                  <v-progress-circular
+                    :rotate="360"
+                    :size="100"
+                    :width="15"
+                    :value="10"
+                    color="red"
+                  >
+                    {{ "10%" }}
+                  </v-progress-circular>
+                </v-flex>
+                <v-flex xs3 text-xs-center>
+                  <v-progress-circular
+                    :rotate="360"
+                    :size="100"
+                    :width="15"
+                    :value="60"
+                    color="primary"
+                  >
+                    {{ "60%" }}
+                  </v-progress-circular>
+                </v-flex>
+              </v-layout>
+            </div>
+            <div class="title teal--text pt-5">Traits available</div>
+            <v-divider class="pb-10"></v-divider>
+          </v-container>
+        </div>
+      </v-tab-item>
+      <v-tab ripple>
         Interactions list
       </v-tab>
       <v-tab-item>
         <Interactions></Interactions>
-      </v-tab-item>
-      <v-tab ripple>
-        Node traits
-      </v-tab>
-      <v-tab-item>
-        <v-flex x12 pl-4 pr-4 pt-2>
-          <v-alert
-            :value="true"
-            color="primary"
-            style="font-style:italic"
-          >
-            Coming soon...
-          </v-alert>
-        </v-flex>
       </v-tab-item>
       <v-tab ripple>
         Dataset
@@ -109,6 +167,7 @@ import _ from 'lodash'
 import D3Network from 'vue-d3-network'
 import Interactions from './Interactions'
 import Dataset from './Dataset'
+import moment from 'moment'
 
 export default {
   components: {
@@ -119,6 +178,7 @@ export default {
   data () {
     return {
       selectNet: this.getNetCollection()[0],
+      ref: this.getRef(),
       nodes: [],
       links: [],
       nEdges: 0,
@@ -147,6 +207,11 @@ export default {
       })
     }
   },
+  filters: {
+    moment: function (date) {
+      return moment(date).format('YYYY-MM-DD')
+    }
+  },
   methods: {
     getTaxons () {
       return this.$store.state.taxons
@@ -156,6 +221,9 @@ export default {
     },
     getNetCollection () {
       return this.$store.state.netCollection
+    },
+    getRef () {
+      return this.$store.state.ref
     },
     resetValues () {
       this.nodes = []
@@ -200,6 +268,7 @@ export default {
   },
   mounted () {
     // init value on mounted
+    this.$store.dispatch('loadAttributes')
     this.updateNetwork(this.$store.state.selectNet)
     this.$store.dispatch('loadDataset', this.getNetCollection()[0].dataset_id).then(() => {
       // Update ref
