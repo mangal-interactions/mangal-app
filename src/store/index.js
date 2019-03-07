@@ -14,9 +14,6 @@ const state = {
   networks: [],
   interactions: [],
   taxons: [],
-  taxonomy: [],
-  traits: [],
-  attributes: [],
   drawerRight: false,
   // Default loading values
   selectNet: 1102,
@@ -65,20 +62,6 @@ const mutations = {
   emptyTaxons (state) {
     state.taxons = []
   },
-  // Taxonomy
-  storeTaxonomy (state, taxonomy) {
-    state.taxonomy.push(taxonomy)
-  },
-  emptyTaxonomy (state) {
-    state.taxonomy = []
-  },
-  // Traits
-  storeTraits (state, traits) {
-    state.traits = traits
-  },
-  emptyTraits (state) {
-    state.traits = []
-  },
   // Dataset
   storeDataset (state, dataset) {
     state.dataset = dataset
@@ -86,13 +69,6 @@ const mutations = {
   // Reference
   storeRef (state, ref) {
     state.ref = ref
-  },
-  // Attributes
-  emptyAttributes (state) {
-    state.attributes = []
-  },
-  storeAttributes (state, attributes) {
-    state.attributes = attributes
   }
 }
 
@@ -110,62 +86,6 @@ const actions = {
           return resolve()
         })
         .catch((err) => {
-          return reject(err)
-        })
-    })
-  },
-  loadTaxonomy ({ commit }, taxons) {
-    return new Promise((resolve, reject) => {
-      let uqTaxons = _.chain(taxons).map('taxonomy_id').uniq().compact().value()
-      let requests = []
-      for (let i = 0; i <= uqTaxons.length - 1; i++) {
-        requests.push(axios.get(process.env.BASE_URL + '/taxonomy/' + uqTaxons[i]))
-      }
-      Promise.all(requests)
-        .then(responses => responses.forEach(
-          response => {
-            if (response.data) {
-              commit('storeTaxonomy', response.data)
-            }
-          }
-        )).then(() => {
-          return resolve()
-        }).catch((err) => {
-          this.$log.error(err)
-          return reject(err)
-        })
-    })
-  },
-  loadTraits ({ commit }, taxons) {
-    return new Promise((resolve, reject) => {
-      let uqTaxons = _.chain(taxons).map('id').uniq().value()
-      let requestsTraits = []
-      let requestsAttr = []
-      let traits = []
-      for (let i = 0; i < uqTaxons.length; i++) {
-        requestsTraits.push(axios.get(process.env.BASE_URL + '/trait?node_id=' + uqTaxons[i]))
-      }
-      Promise.all(requestsTraits)
-        .then(responses => responses.forEach(
-          response => {
-            if (response.data[0]) {
-              traits.push.apply(traits, response.data)
-            }
-          }
-        )).then(() => {
-          for (let i = 0; i < traits.length; i++) {
-            requestsAttr.push(axios.get(process.env.BASE_URL + '/attribute/' + traits[i].attr_id))
-          }
-          Promise.all(requestsAttr).then((responses) => {
-            for (let i = 0; i < responses.length; i++) {
-              traits[i].attributes = responses[i].data
-            }
-          }).then(() => {
-            commit('storeTraits', traits)
-            return resolve()
-          })
-        }).catch((err) => {
-          this.$log.error(err)
           return reject(err)
         })
     })
@@ -229,19 +149,6 @@ const actions = {
         })
     })
   },
-  loadAttributes ({ commit }) {
-    return new Promise((resolve, reject) => {
-      commit('emptyAttributes')
-      axios.get(process.env.BASE_URL + '/attribute').then((response) => {
-        commit('storeAttributes', response.data)
-      }).then(() => {
-        return resolve()
-      }).catch((err) => {
-        this.$log.error(err)
-        return reject(err)
-      })
-    })
-  },
   loadInteractions ({ commit }, ids) {
     return new Promise((resolve, reject) => {
       commit('emptyInteractions')
@@ -273,12 +180,8 @@ const actions = {
       axios.get(process.env.BASE_URL + '/node?network_id=' + idNet)
         .then(response => {
           commit('emptyTaxons')
-          commit('emptyTaxonomy')
-          commit('emptyTraits')
           // store page 0
           commit('storeTaxons', response.data)
-          dispatch('loadTaxonomy', response.data)
-          dispatch('loadTraits', response.data)
           // Check number of pages
           let range = response.headers['content-range'].match(/\d+/g).map(Number)
           let nPages = Math.ceil(range[2] / range[1]) - 1
@@ -330,15 +233,6 @@ const getters = {
   },
   getTaxons: (state) => {
     return state.taxons
-  },
-  getAttributes: (state) => {
-    return state.attributes
-  },
-  getTraits: (state) => {
-    return state.traits
-  },
-  getTaxonomy: (state) => {
-    return state.taxonomy
   }
 }
 
