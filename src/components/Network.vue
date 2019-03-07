@@ -9,18 +9,7 @@
         Network
       </v-tab>
       <v-tab-item>
-        <v-container pa-0>
-          <v-layout row wrap fill-height align-center>
-            <v-flex x12 pl-4 pr-4 pt-2>
-              <v-select
-                color="primary"
-                v-model="selectNet"
-                label="Select network"
-                :items="$store.state.netCollection"
-                item-text="name" item-value="name" return-object
-              ></v-select>
-            </v-flex>
-          </v-layout>
+        <v-container pa-0 pt-2>
           <v-card color="primary" class="white--text">
             <v-layout justify-center>
               <v-flex x12 pa-2 class="text-md-center">
@@ -29,7 +18,7 @@
                 <v-chip small v-if="selectNet.public" color="teal" text-color="white">Public</v-chip>
                 <v-chip small v-else color="orange" text-color="white">Private</v-chip>
                 <v-chip small v-if="!selectNet.all_interactions" color="red" text-color="white">Unrecorded absences</v-chip>
-                <v-chip small v-else color="green" text-color="white">Recorded abscences</v-chip>
+                <v-chip small v-else color="green" text-color="white">Recorded absences</v-chip>
               </v-flex>
             </v-layout>
           </v-card>
@@ -37,7 +26,7 @@
             <v-flex x3>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="body-2 font-weight-bold primary--text">Number of taxons</div>
+                  <div class="body-2 font-weight-bold primary--text">Number of nodes</div>
                   <p class="body-2" style="color:#2c3e50"> {{ nNodes }} </p>
                 </div>
               </v-card>
@@ -192,7 +181,7 @@ export default {
         linkWidth: 3,
         fontSize: 11,
         size: {
-          h: 340
+          h: 400
         }
       }
     }
