@@ -33,8 +33,8 @@ export default {
             measurements: records
           },
           geometry: {
-            type: netGroup[0].localisation.type,
-            coordinates: netGroup[0].localisation.coordinates
+            type: netGroup[0].geom.type,
+            coordinates: netGroup[0].geom.coordinates
           }
         }
         let popup = '<h3>List of networks</h3>'
