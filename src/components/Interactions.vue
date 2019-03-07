@@ -1,47 +1,53 @@
 <template>
-  <div id="app">
-      <div></div>
-      <v-data-table
-        :headers="headers"
-        :items="taxaInteractions"
-        class="elevation-1"
-        color="teal"
-        :rows-per-page-items="rowsPerPageItems"
-        :pagination.sync="pagination"
-      >
-        <template slot="no-data">
-          <v-progress-linear v-slot:progress color="primary" indeterminate></v-progress-linear>
-        </template>
-        <template v-if="taxaInteractions" slot="items" slot-scope="props">
-          <td class="text-xs-center">
-            <div class="font-weight-bold">{{ props.item.node_1_desc.original_name }}</div>
-            <span v-if="props.item.taxonomy_node_1">
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_1.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_node_1.bold + '&dataTypes=basic'">BOLD</a>
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_1.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_node_1.tsn">ITIS</a>
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_1.eol" :href="'https://eol.org/pages/' + props.item.taxonomy_node_1.eol">EOL</a>
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_1.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_node_1.ncbi">NCBI</a>
-            </span>
-          </td>
-          <td class="text-xs-center">
-            <div class="font-weight-bold">{{ props.item.node_2_desc.original_name }}</div>
-            <span v-if="props.item.taxonomy_node_2">
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_2.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_node_2.bold + '&dataTypes=basic'">BOLD</a>
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_2.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_node_2.tsn">ITIS</a>
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_2.eol" :href="'https://eol.org/pages/' + props.item.taxonomy_node_2.eol">EOL</a>
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_2.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_node_2.ncbi">NCBI</a>
-            </span>
-          </td>
-          <td class="text-xs-center">
-            <div v-if="props.item.direction === 'directed'"> <v-icon small color="green">far fa-check-circle</v-icon></div>
-            <div v-else> <v-icon small color="red">far fa-times-circle</v-icon></div>
-          </td>
-          <td class="text-xs-center">{{ props.item.type }}</td>
-          <td class="text-xs-center">{{ props.item.method }}</td>
-          <td class="text-xs-center">{{ props.item.attr_desc.name }}</td>
-          <td>{{ props.item.value }}</td>
-        </template>
-      </v-data-table>
-  </div>
+  <v-flex xs12  v-if="taxaInteractions">
+    <v-data-table
+      :headers="headers"
+      :items="taxaInteractions"
+      class="elevation-1"
+      color="teal"
+      :rows-per-page-items="rowsPerPageItems"
+      :pagination.sync="pagination"
+      style="width:100%"
+    >
+      <template slot="no-data">
+        <v-progress-linear v-slot:progress color="primary" indeterminate></v-progress-linear>
+      </template>
+      <template slot="items" slot-scope="props">
+        <td class="text-xs-center">
+          <div class="font-weight-bold">
+            <span v-if="props.item.node_from_desc.taxonomy">{{ props.item.node_from_desc.taxonomy.name }}</span>
+            <span v-else>{{ props.item.node_from_desc.original_name }}</span>
+          </div>
+          <span v-if="props.item.node_from_desc.taxonomy">
+          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.node_from_desc.taxonomy.bold + '&dataTypes=basic'">BOLD</a>
+          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.node_from_desc.taxonomy.tsn">ITIS</a>
+          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.eol" :href="'https://eol.org/pages/' + props.item.node_from_desc.taxonomy.eol">EOL</a>
+          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.node_from_desc.taxonomy.ncbi">NCBI</a>
+          </span>
+        </td>
+        <td class="text-xs-center">
+          <div v-if="props.item.direction === 'directed'"> <v-icon color="primary" small>fas fa-arrow-right</v-icon></div>
+          <div v-else>  <v-icon color="primary" small>fas fa-arrows-alt-h</v-icon></div>
+        </td>
+        <td class="text-xs-center">
+          <div class="font-weight-bold">
+            <span v-if="props.item.node_to_desc.taxonomy">{{ props.item.node_to_desc.taxonomy.name }}</span>
+            <span v-else>{{ props.item.node_to_desc.original_name }}</span>
+          </div>
+          <span v-if="props.item.node_to_desc.taxonomy">
+          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.node_to_desc.taxonomy.bold + '&dataTypes=basic'">BOLD</a>
+          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.node_to_desc.taxonomy.tsn">ITIS</a>
+          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.eol" :href="'https://eol.org/pages/' + props.item.node_to_desc.taxonomy.eol">EOL</a>
+          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.node_to_desc.taxonomy.ncbi">NCBI</a>
+          </span>
+        </td>
+        <td class="text-xs-center">{{ props.item.type }}</td>
+        <td class="text-xs-center">{{ props.item.method }}</td>
+        <td class="text-xs-center">{{ props.item.attribute.name}}</td>
+        <td>{{ props.item.value }}</td>
+      </template>
+    </v-data-table>
+  </v-flex>
 </template>
 
 <script>
@@ -56,12 +62,19 @@ export default {
         rowsPerPage: 10
       },
       headers: [
-        { text: 'From', value: 'node_1_desc.original_name', width: '1%' }, // Set Hyperlink to ITIS on click
-        { text: 'To', value: 'node_2_desc.original_name', width: '1%' }, // Set Hyperlink to ITIS on click
-        { text: 'Directed?', value: 'direction', width: '1%' },
-        { text: 'Type interaction', value: 'type', width: '1%' },
+        // eslint-disable-next-line
+        { text: 'Node', value: 'node_from_desc.original_name', width: "1%" }, // Set Hyperlink to ITIS on click
+        // eslint-disable-next-line
+        { text: '', value: 'direction', width: "1%" },
+        // eslint-disable-next-line
+        { text: 'Node', value: 'node_to_desc.original_name', width: "1%" }, // Set Hyperlink to ITIS on click
+        // eslint-disable-next-line
+        { text: 'Type', value: 'type', width: '1%' },
+        // eslint-disable-next-line
         { text: 'Method', value: 'method', width: '1%' },
+        // eslint-disable-next-line
         { text: 'Variable', value: 'variable', width: '1%' },
+        // eslint-disable-next-line
         { text: 'Value', value: 'value', width: '1%' }
       ]
     }
@@ -69,37 +82,24 @@ export default {
   computed: {
     ...mapGetters([
       'getInteractions',
-      'getTaxons',
-      'getTraits',
-      'getTaxonomy',
-      'getAttributes'
+      'getTaxons'
     ]),
     taxaInteractions () {
-      let taxaInteractions = this.getInteractions.map((interac) => {
-        let TaxonDesc1 = _.find(this.getTaxons, { id: interac.node_from })
-        let TaxonDesc2 = _.find(this.getTaxons, { id: interac.node_to })
+      let interactions = this.getInteractions
+      let taxaInteractions = []
+      if (interactions.length > 0) {
+        taxaInteractions = interactions.map((interac) => {
+          let TaxonDesc1 = _.find(this.getTaxons, { id: interac.node_from })
+          let TaxonDesc2 = _.find(this.getTaxons, { id: interac.node_to })
 
-        let TaxonomyDesc1 = null
-        let TaxonomyDesc2 = null
-
-        if (TaxonDesc1) {
-          TaxonomyDesc1 = _.find(this.getTaxonomy, { id: TaxonDesc1.taxonomy_id })
-        }
-        if (TaxonDesc2) {
-          TaxonomyDesc2 = _.find(this.getTaxonomy, { id: TaxonDesc2.taxonomy_id })
-        }
-        let attrDesc = _.find(this.getAttributes, { id: interac.attr_id })
-
-        return {
-          ...interac,
-          attr_desc: attrDesc,
-          node_1_desc: TaxonDesc1,
-          node_2_desc: TaxonDesc2,
-          taxonomy_node_1: TaxonomyDesc1,
-          taxonomy_node_2: TaxonomyDesc2
-        }
-      })
-      console.log(taxaInteractions)
+          return {
+            ...interac,
+            node_from_desc: TaxonDesc1,
+            node_to_desc: TaxonDesc2
+          }
+        })
+        console.log(taxaInteractions)
+      }
       return taxaInteractions
     }
   }
