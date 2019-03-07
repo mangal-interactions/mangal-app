@@ -12,27 +12,6 @@ export default {
 
 <template>
   <v-app>
-    <v-dialog
-      v-model="$store.state.loading"
-      hide-overlay
-      persistent
-      width="300"
-      style="z-index:9999"
-    >
-      <v-card
-        color="teal"
-        dark
-      >
-        <v-card-text>
-          Data fetching...
-          <v-progress-linear
-            indeterminate
-            color="white"
-            class="mb-0"
-          ></v-progress-linear>
-        </v-card-text>
-      </v-card>
-    </v-dialog>
     <Navig></Navig>
     <v-content>
       <v-container class="pa-0" fluid fill-height>
