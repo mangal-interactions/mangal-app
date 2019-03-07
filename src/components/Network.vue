@@ -53,10 +53,27 @@
               </v-btn>
             </v-flex>
           </v-layout>
-          <v-flex x12 v-if="$store.state.selectNet">
-            <v-card flat>
+          <v-flex x12 text-xs-center fill-height>
+            <v-card v-if="getLoading.state" flat>
+              <v-card-text class="text-xs-center">
+                <v-progress-circular
+                  style="padding-top:10rem"
+                  indeterminate
+                  color="primary"
+                  :size="70"
+                  :width="7"
+                ></v-progress-circular>
+                <p>{{ getLoading.message }}</p>
+              </v-card-text>
+            </v-card>
+            <v-card height='100%' v-else flat>
               <v-card-text>
-                <d3-network :net-nodes="nodes" :net-links="links" :options="options"></d3-network>
+                <span v-if="getLoading.render">
+                  <d3-network :net-nodes="nodes" :net-links="links" :options="options"></d3-network>
+                </span>
+                <span v-else>
+                  <p color="primary" class="font-italic" style="padding-top:10rem"> Network not rendering (more than 200 nodes) </p>
+                </span>
               </v-card-text>
             </v-card>
           </v-flex>
@@ -172,6 +189,11 @@ export default {
       links: [],
       nEdges: 0,
       nNodes: 0,
+      loading: {
+        state: true,
+        render: true,
+        message: null
+      },
       con: 0,
       options:
       {
@@ -201,6 +223,11 @@ export default {
       return moment(date).format('YYYY-MM-DD')
     }
   },
+  computed: {
+    getLoading: function () {
+      return this.loading
+    }
+  },
   methods: {
     getTaxons () {
       return this.$store.state.taxons
@@ -222,36 +249,49 @@ export default {
       this.con = 0
     },
     updateNetwork (idNet) {
+      this.loading = {
+        state: true,
+        render: true,
+        message: 'Fetching nodes...'
+      }
+      this.resetValues()
       this.$store.dispatch('loadTaxons', idNet).then(() => {
-        this.resetValues()
         let taxons = this.getTaxons()
-        this.getTaxons().forEach(taxa => {
-          this.nodes.push({
-            id: taxa.id,
-            name: taxa.original_name,
-            _color: '#004e6b'
-          })
-        })
-        return _.map(taxons, 'id')
-      }).then((taxaIds) => {
-        this.$store.dispatch('loadInteractions', taxaIds).then(() => {
-          this.getInteractions().forEach(interac => {
-            this.links.push({
-              id: interac.id,
-              sid: interac.node_from,
-              tid: interac.node_to,
-              _color: '#004e6b4a'
+        if (taxons.length < 200) {
+          taxons.forEach(taxa => {
+            this.nodes.push({
+              id: taxa.id,
+              name: taxa.original_name,
+              _color: '#004e6b'
             })
           })
+        } else {
+          this.loading.render = false
+        }
+        return _.map(taxons, 'id')
+      }).then((taxaIds) => {
+        this.loading.message = 'Fetching interactions...'
+        this.$store.dispatch('loadInteractions', taxaIds).then(() => {
+          this.loading.state = false
+          if (this.loading.render) {
+            this.getInteractions().forEach(interac => {
+              this.links.push({
+                id: interac.id,
+                sid: interac.node_from,
+                tid: interac.node_to,
+                _color: '#004e6b4a'
+              })
+            })
+          }
         }).then(() => {
-          this.nEdges = this.links.length
-          this.con = (this.nEdges / (this.nodes.length ** 2)).toFixed(2)
+          this.nEdges = this.getInteractions().length
+          this.con = (this.nEdges / (this.getTaxons().length ** 2)).toFixed(2)
         })
           .catch((err) => {
             return err
           })
       }).then(() => {
-        this.nNodes = this.nodes.length
+        this.nNodes = this.getTaxons().length
       })
     }
   },
