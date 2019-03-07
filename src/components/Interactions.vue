@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+      <div></div>
       <v-data-table
         :headers="headers"
         :items="taxaInteractions"
@@ -11,20 +12,24 @@
         <template slot="no-data">
           <v-progress-linear v-slot:progress color="primary" indeterminate></v-progress-linear>
         </template>
-        <template slot="items" slot-scope="props">
+        <template v-if="taxaInteractions" slot="items" slot-scope="props">
           <td class="text-xs-center">
             <div class="font-weight-bold">{{ props.item.node_1_desc.original_name }}</div>
+            <span v-if="props.item.taxonomy_node_1">
             <a class="caption blue--text" v-if="props.item.taxonomy_node_1.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_node_1.bold + '&dataTypes=basic'">BOLD</a>
             <a class="caption blue--text" v-if="props.item.taxonomy_node_1.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_node_1.tsn">ITIS</a>
             <a class="caption blue--text" v-if="props.item.taxonomy_node_1.eol" :href="'https://eol.org/pages/' + props.item.taxonomy_node_1.eol">EOL</a>
-            <a class="caption blue--text" v-if="props.item.taxonomy_node_1.cbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_node_1.ncbi">NCBI</a>
+            <a class="caption blue--text" v-if="props.item.taxonomy_node_1.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_node_1.ncbi">NCBI</a>
+            </span>
           </td>
           <td class="text-xs-center">
             <div class="font-weight-bold">{{ props.item.node_2_desc.original_name }}</div>
+            <span v-if="props.item.taxonomy_node_2">
             <a class="caption blue--text" v-if="props.item.taxonomy_node_2.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.taxonomy_node_2.bold + '&dataTypes=basic'">BOLD</a>
             <a class="caption blue--text" v-if="props.item.taxonomy_node_2.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.taxonomy_node_2.tsn">ITIS</a>
             <a class="caption blue--text" v-if="props.item.taxonomy_node_2.eol" :href="'https://eol.org/pages/' + props.item.taxonomy_node_2.eol">EOL</a>
             <a class="caption blue--text" v-if="props.item.taxonomy_node_2.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.taxonomy_node_2.ncbi">NCBI</a>
+            </span>
           </td>
           <td class="text-xs-center">
             <div v-if="props.item.direction === 'directed'"> <v-icon small color="green">far fa-check-circle</v-icon></div>
