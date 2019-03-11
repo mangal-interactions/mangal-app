@@ -83,74 +83,7 @@
         Node properties
       </v-tab>
       <v-tab-item>
-        <div>
-          <v-container class="text-md-left">
-             <div class="title teal--text pt-4">Taxon resolved <span class="caption">(Beta)</span></div>
-             <v-divider class="pb-4"></v-divider>
-              <div>
-              <v-layout row wrap>
-                <v-flex xs3 text-xs-center>
-                  <div class="font-weight-bold body-2">ITIS</div>
-                </v-flex>
-                <v-flex xs3 text-xs-center>
-                  <div class="font-weight-bold body-2">BOLD</div>
-                </v-flex>
-                <v-flex xs3 text-xs-center>
-                  <div class="font-weight-bold body-2">EOL</div>
-                </v-flex>
-                <v-flex xs3 text-xs-center>
-                  <div class="font-weight-bold body-2">NCBI</div>
-                </v-flex>
-                <v-flex xs3 text-xs-center>
-                  <v-progress-circular
-                    :rotate="360"
-                    :size="100"
-                    :width="15"
-                    :value="60"
-                    color="teal"
-                  >
-                    {{ "60%" }}
-                  </v-progress-circular>
-                </v-flex>
-                <v-flex xs3 text-xs-center>
-                  <v-progress-circular
-                    :rotate="360"
-                    :size="100"
-                    :width="15"
-                    :value="20"
-                    color="orange"
-                  >
-                    {{ "20%" }}
-                  </v-progress-circular>
-                </v-flex>
-                <v-flex xs3 text-xs-center>
-                  <v-progress-circular
-                    :rotate="360"
-                    :size="100"
-                    :width="15"
-                    :value="10"
-                    color="red"
-                  >
-                    {{ "10%" }}
-                  </v-progress-circular>
-                </v-flex>
-                <v-flex xs3 text-xs-center>
-                  <v-progress-circular
-                    :rotate="360"
-                    :size="100"
-                    :width="15"
-                    :value="60"
-                    color="primary"
-                  >
-                    {{ "60%" }}
-                  </v-progress-circular>
-                </v-flex>
-              </v-layout>
-            </div>
-            <div class="title teal--text pt-5">Traits available</div>
-            <v-divider class="pb-10"></v-divider>
-          </v-container>
-        </div>
+        <Nodes></Nodes>
       </v-tab-item>
       <v-tab ripple>
         Interactions list
@@ -173,13 +106,15 @@ import _ from 'lodash'
 import D3Network from 'vue-d3-network'
 import Interactions from './Interactions'
 import Dataset from './Dataset'
+import Nodes from './Nodes'
 import moment from 'moment'
 
 export default {
   components: {
     D3Network,
     Interactions,
-    Dataset
+    Dataset,
+    Nodes
   },
   data () {
     return {
@@ -294,7 +229,6 @@ export default {
   },
   mounted () {
     // init value on mounted
-    this.$store.dispatch('loadAttributes')
     this.updateNetwork(this.$store.state.selectNet)
     this.$store.dispatch('loadDataset', this.getNetCollection()[0].dataset_id).then(() => {
       // Update ref
