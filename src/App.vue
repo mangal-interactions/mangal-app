@@ -24,6 +24,6 @@ export default {
   font-size: 12px;
 }
 html {
-  overflow: hidden;
+  overflow: hidden !important;
 }
 </style>
