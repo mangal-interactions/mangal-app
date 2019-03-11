@@ -27,18 +27,18 @@
       <div class="title pt-4 teal--text">Citation</div>
       <v-divider class="pb-2"></v-divider>
       <v-flex pt-3 x12>
-        <div v-if="getRef" class="text-md-left">{{ getCitation }}<br>
-        <v-btn @click="exportBib" small depressed outline color="teal" text-color="white" style="font-size:11px;margin:0px;text-transform: none !important;">Export as BibTex</v-btn>
+        <div v-if="getRef" class="text-md-left">{{ getCitation || 'None' }}<br>
+        <v-btn v-if="getCitation" @click="exportBib()" small depressed outline color="teal" text-color="white" style="font-size:11px;margin:0px;text-transform: none !important;">Export as BibTex</v-btn>
         </div>
       </v-flex>
       <div class="title pt-4 teal--text">Sources</div>
       <v-divider class="pb-2"></v-divider>
       <v-flex x12>
         <div v-if="getRef" class="text-md-left">
-          <div class="font-weight-bold body-2">Data URL</div><a :href="getRef.data_url || null">{{ getRef.data_url || "None" }}</a>
+          <div class="font-weight-bold body-2">Data URL</div><a :href="getRef.data_url">{{ getRef.data_url || "None" }}</a>
         </div>
         <div v-if="getRef" class="text-md-left">
-          <div class="font-weight-bold body-2">Paper URL</div><a :href="getRef.paper_url || null">{{ getRef.paper_url || "None"}}</a>
+          <div class="font-weight-bold body-2">Paper URL</div><a :href="getRef.paper_url">{{ getRef.paper_url || "None"}}</a>
         </div>
       </v-flex>
     </v-container>
