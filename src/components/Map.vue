@@ -129,7 +129,6 @@ export default {
       })
     }).then(() => {
       this.$store.dispatch('openStatePane', true)
-      this.$store.dispatch('setLoading', false)
     })
   }
 }

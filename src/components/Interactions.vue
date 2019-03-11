@@ -3,7 +3,6 @@
     <v-data-table
       :headers="headers"
       :items="taxaInteractions"
-      class="elevation-1"
       color="teal"
       :rows-per-page-items="rowsPerPageItems"
       :pagination.sync="pagination"
@@ -86,7 +85,7 @@ export default {
     ]),
     taxaInteractions () {
       let interactions = this.getInteractions
-      let taxaInteractions = []
+      let taxaInteractions = null
       if (interactions.length > 0) {
         taxaInteractions = interactions.map((interac) => {
           let TaxonDesc1 = _.find(this.getTaxons, { id: interac.node_from })

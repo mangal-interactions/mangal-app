@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer fixed v-model="$store.state.drawerRight" right clipped app width="700">
+    <v-navigation-drawer fixed v-model="$store.state.drawerRight" right clipped app width="700" style="z-index:999">
       <v-layout wrap row v-if="!$store.state.loading">
         <v-flex x12 class="text-xs-center">
           <Network></Network>

@@ -17,15 +17,10 @@ const state = {
   drawerRight: false,
   // Default loading values
   selectNet: 1102,
-  netCollection: [{'id': 1102, 'name': 'bulman_2001', 'date': '1993-07-01T04:00:00.000Z', 'geom': {'type': 'Point', 'coordinates': [120.433333, 22.45]}, 'description': 'Dietary matrix of  demersal fishes of the south-eastern Australian shelf', 'public': true, 'all_interactions': false, 'created_at': '2019-02-26T23:22:13.839Z', 'updated_at': '2019-02-26T23:22:13.839Z', 'dataset_id': 58, 'environment_id': null, 'user_id': null, 'group': '120.433333_22.45'}, {'id': 89, 'name': 'lin_2006', 'date': '2006-01-01T05:00:00.000Z', 'geom': {'type': 'Point', 'coordinates': [120.433333, 22.45]}, 'description': 'Dietary matrix of the Tapong Bay', 'public': true, 'all_interactions': false, 'created_at': '2019-02-23T21:33:15.418Z', 'updated_at': '2019-02-23T21:33:15.418Z', 'dataset_id': 25, 'environment_id': null, 'user_id': null, 'group': '120.433333_22.45'}],
-  loading: true
+  netCollection: [{'id': 1102, 'name': 'bulman_2001', 'date': '1993-07-01T04:00:00.000Z', 'geom': {'type': 'Point', 'coordinates': [120.433333, 22.45]}, 'description': 'Dietary matrix of  demersal fishes of the south-eastern Australian shelf', 'public': true, 'all_interactions': false, 'created_at': '2019-02-26T23:22:13.839Z', 'updated_at': '2019-02-26T23:22:13.839Z', 'dataset_id': 58, 'environment_id': null, 'user_id': null, 'group': '120.433333_22.45'}, {'id': 89, 'name': 'lin_2006', 'date': '2006-01-01T05:00:00.000Z', 'geom': {'type': 'Point', 'coordinates': [120.433333, 22.45]}, 'description': 'Dietary matrix of the Tapong Bay', 'public': true, 'all_interactions': false, 'created_at': '2019-02-23T21:33:15.418Z', 'updated_at': '2019-02-23T21:33:15.418Z', 'dataset_id': 25, 'environment_id': null, 'user_id': null, 'group': '120.433333_22.45'}]
 }
 
 const mutations = {
-  // Loading
-  changeLoadingState (state, loading) {
-    state.loading = loading
-  },
   // Open Panes
   changeStatePane (state, bol) {
     state.drawerRight = bol
@@ -209,9 +204,6 @@ const actions = {
   },
   setNetCollection ({ commit }, netCollection) {
     return commit('setNetCollection', netCollection)
-  },
-  setLoading ({ commit }, status) {
-    commit('changeLoadingState', status)
   }
 }
 
