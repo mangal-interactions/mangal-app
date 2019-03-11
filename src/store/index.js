@@ -116,7 +116,7 @@ const actions = {
         .groupBy('group')
         .value()
       commit('setMapCollection', netCollection)
-      return resolve()
+      return resolve(netCollection)
     })
   },
   loadNetworks ({ commit }) {
@@ -216,6 +216,9 @@ const actions = {
 }
 
 const getters = {
+  getMapCollection: (state) => {
+    return state.mapCollection
+  },
   getNetCollection: (state) => {
     return state.netCollection
   },
