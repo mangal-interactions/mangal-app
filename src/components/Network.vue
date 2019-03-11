@@ -53,7 +53,7 @@
               </v-btn>
             </v-flex>
           </v-layout>
-          <v-flex x12 text-xs-center fill-height>
+          <v-flex x12 text-xs-center align-end>
             <v-card v-if="getLoading.state" flat>
               <v-card-text class="text-xs-center">
                 <v-progress-circular
@@ -201,10 +201,7 @@ export default {
         nodeSize: 14,
         nodeLabels: true,
         linkWidth: 3,
-        fontSize: 11,
-        size: {
-          h: 400
-        }
+        fontSize: 11
       }
     }
   },
@@ -261,7 +258,7 @@ export default {
           taxons.forEach(taxa => {
             this.nodes.push({
               id: taxa.id,
-              name: taxa.original_name,
+              name: taxa.taxonomy ? taxa.taxonomy.name : taxa.original_name,
               _color: '#004e6b'
             })
           })
@@ -307,7 +304,7 @@ export default {
     this.$store.watch((newId) => {
       return this.$store.state.selectNet
     }, (newId) => {
-      this.selectNet = this.getNetCollection()[0]
+      this.selectNet = _.find(this.getNetCollection(), {id: newId})
     })
   }
 }
@@ -316,5 +313,12 @@ export default {
 <style>
 .rounded-card{
   border-radius:50px;
+}
+.v-card__text {
+    padding: 16px;
+    width: 100%;
+}
+svg:not(:root) {
+  height: 55vh;
 }
 </style>
