@@ -9,10 +9,6 @@ import VueLogger from 'vuejs-logger'
 import Vuetify from 'vuetify'
 import store from './store'
 import 'vuetify/dist/vuetify.min.css'
-import 'leaflet'
-import 'leaflet.markercluster'
-import 'leaflet/dist/leaflet.css'
-const L = window.L
 
 Vue.config.productionTip = false
 
@@ -25,14 +21,6 @@ const LoggerOptions = {
   separator: '|',
   showConsoleColors: true
 }
-
-delete L.Icon.Default.prototype._getIconUrl
-
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-  iconUrl: require('leaflet/dist/images/marker-icon.png'),
-  shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-})
 
 Vue.use(Vuetify, {
   iconfont: 'fa',
