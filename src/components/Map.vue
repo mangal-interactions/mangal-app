@@ -1,88 +1,132 @@
 <template>
-  <v-layout>
-    <v-flex x12 fill-height>
-      <div id="mangalMap"></div>
-    </v-flex>
-  </v-layout>
+    <div id='mangalMap'></div>
 </template>
 
 <script>
-// import axios from 'axios'
-import 'leaflet'
-import moment from 'moment'
-const L = window.L
+import mapboxgl from 'mapbox-gl'
+import _ from 'lodash'
+import { mapGetters } from 'vuex'
+import Popup from './Popup'
+import Vue from 'vue'
+import store from '../store'
 
 export default {
+  components: {
+    Popup
+  },
   methods: {
-    getMapCollection () {
-      return Object.values(this.$store.state.mapCollection)
+    updateNetworks (networks) {
+      this.$store.dispatch('setNet', networks[0].id)
+      this.$store.dispatch('setNetCollection', networks)
     },
-    setLayerNetworks () {
-      let layerNet = L.featureGroup()
-      this.getMapCollection().forEach(netGroup => {
-        let records = netGroup.map(
-          function (net) {
-            return {
-              ...net
-            }
-          }
-        )
-        let feature = {
-          type: 'Feature',
-          properties: {
-            measurements: records
-          },
-          geometry: {
-            type: netGroup[0].geom.type,
-            coordinates: netGroup[0].geom.coordinates
-          }
-        }
-        let popup = '<h3>List of networks</h3>'
-        feature.properties.measurements.forEach((meas) => {
-          let formatDate = meas.date ? moment(meas.date).format('YYYY-MM-DD') : 'Unknown'
-          popup = popup.concat('<div>', meas.name, ' - ', formatDate, '</div>')
-        })
-
-        // Add feature to the map
-        L.geoJSON(feature)
-          .bindPopup(popup)
-          .addTo(layerNet)
-      })
-      return layerNet
+    setNet (id) {
+      this.$store.dispatch('setNet', id)
     },
-    storeNetworks (l) {
-      let idNet = l.layer.feature.properties.measurements[0].id
-      let netCollection = l.layer.feature.properties.measurements
-      this.$store.dispatch('setNet', idNet)
-      this.$store.dispatch('setNetCollection', netCollection)
+    getNetworksAtLocation (group) {
+      return this.getMapCollection[group]
     }
   },
-  mounted () {
-    // Init map
-    let mangalMap = L.map('mangalMap', { minZoom: 2 })
-    let mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>'
-    let mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1Ijoic3RldmV2aXNzIiwiYSI6ImNpaG53N2RsczBwOTZ0dGx6c3JqdXBoYzMifQ.w3eEV_jVfAo7d46D1i55BA'
-    let grayscale = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr})
-    let streets = L.tileLayer(mbUrl, {id: 'mapbox.streets', attribution: mbAttr})
-    let satellite = L.tileLayer(mbUrl, {id: 'mapbox.satellite', attribution: mbAttr})
-    let satelliteStreet = L.tileLayer(mbUrl, {id: 'mapbox.streets-satellite', attribution: mbAttr})
-    let baseLayers = {
-      'Grayscale': grayscale,
-      'Streets': streets,
-      'Satellite': satellite,
-      'Satellite and streets': satelliteStreet
+  data () {
+    return {
+      networksAtLocation: null
     }
-    L.control.layers(baseLayers).addTo(mangalMap)
-    streets.addTo(mangalMap)
+  },
+  computed: {
+    ...mapGetters([
+      'getNetCollection',
+      'getMapCollection'
+    ])
+  },
+  mounted () {
+    let vm = this
+    // Init map
+    mapboxgl.accessToken = 'pk.eyJ1Ijoic3RldmV2aXNzIiwiYSI6ImNpaG53N2RsczBwOTZ0dGx6c3JqdXBoYzMifQ.w3eEV_jVfAo7d46D1i55BA'
+    // eslint-disable-next-line
+    let map = new mapboxgl.Map({
+      container: 'mangalMap', // container id
+      style: 'mapbox://styles/mapbox/streets-v9', // stylesheet location
+      zoom: 1 // starting zoom
+    })
+
+    map.addControl(new mapboxgl.NavigationControl(), 'top-left')
+
+    map.on('click', function (e) {
+      const features = map.queryRenderedFeatures(e.point, {
+        layers: ['netPoints', 'netPolys']
+      })
+
+      vm.networksAtLocation = vm.getNetworksAtLocation(features[0].properties.group)
+      vm.updateNetworks(vm.networksAtLocation)
+
+      var popup = new Vue({
+        ...Popup,
+        store: store,
+        propsData: {
+          networksData: vm.networksAtLocation
+        }
+      }).$mount()
+
+      popup.$on('updateNet', (id) => {
+        console.log(id)
+        vm.setNet(id)
+      })
+
+      // Populate the popup and set its coordinates
+      // based on the feature found.
+      // eslint-disable-next-line
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setDOMContent(popup.$el)
+        .addTo(map)
+    })
+
     this.$store.dispatch('loadNetworks').then(() => {
-      return this.$store.dispatch('loadNetworksCollection')
-    }).then(() => {
-      let layerNet = this.setLayerNetworks()
-      layerNet.addTo(mangalMap)
-      mangalMap.fitBounds(layerNet.getBounds())
-      layerNet.on('click', this.storeNetworks)
+      this.$store.dispatch('loadNetworksCollection').then((mapCollection) => {
+        // Add a layer showing the places.
+        let features = _.values(mapCollection).map(netGroup => {
+          return {
+            type: 'Feature',
+            properties: {
+              group: netGroup[0].group
+            },
+            geometry: {
+              type: netGroup[0].geom.type,
+              coordinates: netGroup[0].geom.coordinates
+            }
+          }
+        })
+        map.on('load', function () {
+          map.addSource('netLocations', {
+            'type': 'geojson',
+            'data': {
+              'type': 'FeatureCollection',
+              'features': features
+            }
+          })
+          map.addLayer({
+            'id': 'netPolys',
+            'type': 'fill',
+            'source': 'netLocations',
+            'paint': {
+              'fill-color': '#004e6b',
+              'fill-opacity': 0.7
+            },
+            'filter': ['==', '$type', 'Polygon']
+          })
+          map.addLayer({
+            'id': 'netPoints',
+            'type': 'circle',
+            'source': 'netLocations',
+            'paint': {
+              'circle-opacity': 0.8,
+              'circle-stroke-width': 1,
+              'circle-stroke-color': '#fff',
+              'circle-color': '#004e6b'
+            },
+            'filter': ['==', '$type', 'Point']
+          })
+        })
+      })
     }).then(() => {
       this.$store.dispatch('openStatePane', true)
       this.$store.dispatch('setLoading', false)
@@ -93,7 +137,9 @@ export default {
 
 <style>
 #mangalMap {
-  padding: 0;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
 }
 </style>

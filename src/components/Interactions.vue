@@ -98,7 +98,6 @@ export default {
             node_to_desc: TaxonDesc2
           }
         })
-        console.log(taxaInteractions)
       }
       return taxaInteractions
     }
