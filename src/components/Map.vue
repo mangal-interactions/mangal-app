@@ -141,4 +141,8 @@ export default {
   bottom: 0;
   width: 100%;
 }
+.mapboxgl-popup-content {
+  max-height: 200px;
+  overflow-y: auto;
+}
 </style>
