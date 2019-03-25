@@ -11,7 +11,7 @@
           <span class="font-weight-bold body-2">Dataset name:</span> {{ getDataset.name }}
         </div>
         <div>
-          <span class="font-weight-bold body-2">Number of networks attached:</span> {{ getDataset.networks.length }}
+          <span class="font-weight-bold body-2">Number of networks attached:</span> TODO
         </div>
         <div>
           <span class="font-weight-bold body-2">Description:</span> {{ getDataset.description }}
