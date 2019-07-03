@@ -44,7 +44,7 @@ export default {
     // eslint-disable-next-line
     let map = new mapboxgl.Map({
       container: 'mangalMap', // container id
-      style: 'mapbox://styles/mapbox/streets-v9', // stylesheet location
+      style: 'mapbox://styles/steveviss/cjxnk6wv62tkm1doc2f3lopv0', // stylesheet location
       zoom: 1 // starting zoom
     })
 
