@@ -1,7 +1,17 @@
 <template>
   <div>
     <v-container class="text-md-left">
-        <div class="title teal--text pt-4">Taxon resolved <span class="caption">(Beta)</span></div>
+        <div class="title teal--text">Traits available</div>
+        <v-divider class="pb-10"></v-divider>
+        <v-flex xs12 pt-3>
+          <v-alert
+            :value="true"
+            type="secondary"
+          >
+            <div class="font-italic"> Coming soon...</div>
+          </v-alert>
+        </v-flex>
+        <div class="title teal--text pt-4">External IDs</div>
         <v-divider class="pb-4"></v-divider>
         <div>
         <v-layout row wrap>
@@ -25,7 +35,7 @@
               :value="percentTSN"
               color="teal"
             >
-              {{ percentTSN }}
+              {{ percentTSN }}%
             </v-progress-circular>
           </v-flex>
           <v-flex xs3 text-xs-center>
@@ -36,7 +46,7 @@
               :value="percentBOLD"
               color="orange"
             >
-              {{ percentBOLD }}
+              {{ percentBOLD }}%
             </v-progress-circular>
           </v-flex>
           <v-flex xs3 text-xs-center>
@@ -47,7 +57,7 @@
               :value="percentEOL"
               color="red"
             >
-              {{ percentEOL }}
+              {{ percentEOL }}%
             </v-progress-circular>
           </v-flex>
           <v-flex xs3 text-xs-center>
@@ -56,15 +66,44 @@
               :size="100"
               :width="15"
               :value="percentNCBI"
-              color="primary"
+              color="pink darken-1"
             >
-              {{ percentNCBI }}
+              {{ percentNCBI }}%
             </v-progress-circular>
+          </v-flex>
+          <v-flex xs3 text-xs-center offset-xs3 pt-2>
+            <div class="font-weight-bold body-2">COL</div>
+          </v-flex>
+          <v-flex xs3 text-xs-center pt-2>
+            <div class="font-weight-bold body-2">GBIF</div>
+          </v-flex>
+          <v-flex xs3 text-xs-center offset-xs3>
+            <v-progress-circular
+              :rotate="360"
+              :size="100"
+              :width="15"
+              :value="percentCOL"
+              color="cyan darken-1"
+            >
+              {{ percentCOL }}%
+            </v-progress-circular>
+          </v-flex>
+          <v-flex xs3 text-xs-center>
+            <v-progress-circular
+              :rotate="360"
+              :size="100"
+              :width="15"
+              :value="percentGBIF"
+              color="lime"
+            >
+              {{ percentGBIF }}%
+            </v-progress-circular>
+          </v-flex>
+          <v-flex xs12 text-xs-center pt-3>
+            <div class="body-2 pb-3 font-italic">Percent of IDs coverage from external sources for nodes of this network</div>
           </v-flex>
         </v-layout>
       </div>
-      <div class="title teal--text pt-5">Traits available</div>
-      <v-divider class="pb-10"></v-divider>
     </v-container>
   </div>
 </template>
@@ -74,65 +113,42 @@ import { mapGetters } from 'vuex'
 import _ from 'lodash'
 
 export default {
+  methods: {
+    coverTaxo: function (infra) {
+      let v = []
+      if (this.getTaxons) {
+        this.getTaxons.forEach(node => {
+          if (_.has(node, 'taxonomy.' + infra)) {
+            node.taxonomy[infra] === null ? v.push(false) : v.push(true)
+          } else {
+            v.push(false)
+          }
+        })
+        return _.round((_.sum(v) / v.length * 100), 1)
+      }
+    }
+  },
   computed: {
     ...mapGetters([
       'getTaxons'
     ]),
     percentTSN: function () {
-      let v = _.map(this.getTaxons, function (taxa) {
-        if (_.has(taxa, 'taxonomy.tsn')) {
-          if (taxa.taxonomy.tsn !== null) {
-            return true
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      })
-      return (_.filter(v, (o) => { if (o) return o }).length / this.getTaxons.length * 100).toFixed(1)
+      return this.coverTaxo('tsn')
     },
     percentNCBI: function () {
-      let v = _.map(this.getTaxons, function (taxa) {
-        if (_.has(taxa, 'taxonomy.ncbi')) {
-          if (taxa.taxonomy.ncbi !== null) {
-            return true
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      })
-      return (_.filter(v, (o) => { if (o) return o }).length / this.getTaxons.length * 100).toFixed(1)
+      return this.coverTaxo('ncbi')
     },
     percentBOLD: function () {
-      let v = _.map(this.getTaxons, function (taxa) {
-        if (_.has(taxa, 'taxonomy.bold')) {
-          if (taxa.taxonomy.bold !== null) {
-            return true
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      })
-      return (_.filter(v, (o) => { if (o) return o }).length / this.getTaxons.length * 100).toFixed(1)
+      return this.coverTaxo('bold')
     },
     percentEOL: function () {
-      let v = _.map(this.getTaxons, function (taxa) {
-        if (_.has(taxa, 'taxonomy.eol')) {
-          if (taxa.taxonomy.eol !== null) {
-            return true
-          } else {
-            return false
-          }
-        } else {
-          return false
-        }
-      })
-      return (_.filter(v, (o) => { if (o) return o }).length / this.getTaxons.length * 100).toFixed(1)
+      return this.coverTaxo('eol')
+    },
+    percentCOL: function () {
+      return this.coverTaxo('col')
+    },
+    percentGBIF: function () {
+      return this.coverTaxo('gbif')
     }
   }
 }

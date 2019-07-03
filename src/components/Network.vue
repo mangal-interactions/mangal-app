@@ -13,7 +13,7 @@
           <v-card color="primary" class="white--text">
             <v-layout justify-center>
               <v-flex x12 pa-2 class="text-md-center">
-                <div class="subheading font-weight-bold">{{ selectNet.description }}</div>
+                <div class="subheading font-weight-bold" style="font-family:Cardo!important;">{{ selectNet.description }}</div>
                 <div> <v-icon small color="white">fas fa-info-circle</v-icon> Mangal network ID #{{ selectNet.id }}, measurement date: {{ selectNet.date | moment }}</div>
                 <v-chip small v-if="selectNet.public" color="teal" text-color="white">Public</v-chip>
                 <v-chip small v-else color="orange" text-color="white">Private</v-chip>
@@ -23,7 +23,7 @@
             </v-layout>
           </v-card>
           <v-layout align-center justify-center fill-height pt-3 row>
-            <v-flex x3>
+            <v-flex x4>
               <v-card flat color="white">
                 <div class="text-md-center">
                   <div class="body-2 font-weight-bold primary--text">Number of nodes</div>
@@ -31,26 +31,21 @@
                 </div>
               </v-card>
             </v-flex>
-            <v-flex x3>
+            <v-flex x4>
               <v-card flat color="white">
                 <div class="text-md-center">
-                  <div class="body-2 font-weight-bold primary--text">Number of interactions</div>
+                  <div class="body-2 font-weight-bold primary--text" >Number of interactions</div>
                   <p class="body-2" style="color:#2c3e50"> {{ nEdges }} </p>
                 </div>
               </v-card>
             </v-flex>
-            <v-flex x3>
+            <v-flex x4>
               <v-card flat color="white">
                 <div class="text-md-center">
                   <div class="body-2 font-weight-bold primary--text">Connectance</div>
                   <p class="body-2" style="color:#2c3e50">{{ con }}</p>
                 </div>
               </v-card>
-            </v-flex>
-            <v-flex x3>
-              <v-btn outline fab dark color="primary">
-                <v-icon dark>fas fa-download</v-icon>
-              </v-btn>
             </v-flex>
           </v-layout>
           <v-flex x12 text-xs-center align-end>
@@ -245,6 +240,8 @@ export default {
 </script>
 
 <style>
+@import url('https://fonts.googleapis.com/css?family=Cardo');
+
 .rounded-card{
   border-radius:50px;
 }

@@ -9,28 +9,28 @@
     </v-navigation-drawer>
     <v-toolbar color="primary" dark fixed app clipped-right>
       <v-toolbar-title class="white--text font-weight-bold">
-        Mangal.io -
-        <span class="font-weight-regular">Ecological interaction database</span>
+        Mangal -
+        <span class="font-weight-regular">Ecological interactions database</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items>
-        <v-btn depressed color="primary" href='#'>
+        <!-- <v-btn depressed color="primary" href='#' disabled="true">
           Synthesis
           <v-icon class="pa-2">fas fa-tachometer-alt</v-icon>
-        </v-btn>
+        </v-btn> -->
         <v-btn depressed color="primary" href='https://github.com/mangal-wg'>
           Code
           <v-icon class="pa-2">fab fa-github</v-icon>
         </v-btn>
-        <v-btn depressed color="primary">
+        <v-btn depressed color="primary" href="https://mangal.io/doc/api">
           API Doc
           <v-icon class="pa-2">fas fa-code</v-icon>
         </v-btn>
-        <v-btn depressed color="primary" href="https://github.com/mangal-wg/rmangal">
+        <v-btn depressed color="primary" href="https://mangal.io/doc/r">
           R package
           <v-icon class="pa-2">fas fa-cube</v-icon>
         </v-btn>
-        <v-btn depressed color="primary" href="https://github.com/PoisotLab/Mangal.jl">
+        <v-btn depressed color="primary" href="https://mangal.io/doc/jl">
           Julia package
           <v-icon class="pa-2">fas fa-cube</v-icon>
         </v-btn>

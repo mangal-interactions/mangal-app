@@ -18,10 +18,12 @@
             <span v-else>{{ props.item.node_from_desc.original_name }}</span>
           </div>
           <span v-if="props.item.node_from_desc.taxonomy">
-          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.node_from_desc.taxonomy.bold + '&dataTypes=basic'">BOLD</a>
-          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.node_from_desc.taxonomy.tsn">ITIS</a>
-          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.eol" :href="'https://eol.org/pages/' + props.item.node_from_desc.taxonomy.eol">EOL</a>
-          <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.node_from_desc.taxonomy.ncbi">NCBI</a>
+            <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.node_from_desc.taxonomy.bold + '&dataTypes=basic'">BOLD</a>
+            <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.node_from_desc.taxonomy.tsn">ITIS</a>
+            <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.eol" :href="'https://eol.org/pages/' + props.item.node_from_desc.taxonomy.eol">EOL</a>
+            <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.node_from_desc.taxonomy.ncbi">NCBI</a>
+            <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.gbif" :href="'https://www.gbif.org/species/' + props.item.node_from_desc.taxonomy.gbif">GBIF</a>
+            <a class="caption blue--text" v-if="props.item.node_from_desc.taxonomy.col" :href="'https://www.catalogueoflife.org/col/details/species/id/' + props.item.node_from_desc.taxonomy.col">COL</a>
           </span>
         </td>
         <td class="text-xs-center">
@@ -34,10 +36,12 @@
             <span v-else>{{ props.item.node_to_desc.original_name }}</span>
           </div>
           <span v-if="props.item.node_to_desc.taxonomy">
-          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.node_to_desc.taxonomy.bold + '&dataTypes=basic'">BOLD</a>
-          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.node_to_desc.taxonomy.tsn">ITIS</a>
-          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.eol" :href="'https://eol.org/pages/' + props.item.node_to_desc.taxonomy.eol">EOL</a>
-          <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.node_to_desc.taxonomy.ncbi">NCBI</a>
+            <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.bold" :href="'http://v4.boldsystems.org/index.php/API_Tax/TaxonData?taxId=' + props.item.node_to_desc.taxonomy.bold + '&dataTypes=basic'">BOLD</a>
+            <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.tsn" :href="'https://www.itis.gov/servlet/SingleRpt/SingleRpt?search_topic=TSN&search_value=' + props.item.node_to_desc.taxonomy.tsn">ITIS</a>
+            <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.eol" :href="'https://eol.org/pages/' + props.item.node_to_desc.taxonomy.eol">EOL</a>
+            <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.ncbi" :href="'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' + props.item.node_to_desc.taxonomy.ncbi">NCBI</a>
+            <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.gbif" :href="'https://www.gbif.org/species/' + props.item.node_to_desc.taxonomy.gbif">GBIF</a>
+            <a class="caption blue--text" v-if="props.item.node_to_desc.taxonomy.col" :href="'https://www.catalogueoflife.org/col/details/species/id/' + props.item.node_to_desc.taxonomy.col">COL</a>
           </span>
         </td>
         <td class="text-xs-center">{{ props.item.type }}</td>
