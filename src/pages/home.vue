@@ -30,6 +30,10 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css?family=Cardo');
+div.display-2, div.display-3 {
+  font-family: Cardo !important;
+  color: primary;
+}
 .display-2, .display-3 {
   font-family: Cardo !important;
   color: primary;
