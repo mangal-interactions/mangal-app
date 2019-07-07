@@ -50,36 +50,6 @@ export default {
 
     map.addControl(new mapboxgl.NavigationControl(), 'top-left')
 
-    map.on('click', function (e) {
-      const features = map.queryRenderedFeatures(e.point, {
-        layers: ['netPoints', 'netPolys']
-      })
-
-      vm.networksAtLocation = vm.getNetworksAtLocation(features[0].properties.group)
-      vm.updateNetworks(vm.networksAtLocation)
-
-      var popup = new Vue({
-        ...Popup,
-        store: store,
-        propsData: {
-          networksData: vm.networksAtLocation
-        }
-      }).$mount()
-
-      popup.$on('updateNet', (id) => {
-        console.log(id)
-        vm.setNet(id)
-      })
-
-      // Populate the popup and set its coordinates
-      // based on the feature found.
-      // eslint-disable-next-line
-      new mapboxgl.Popup()
-        .setLngLat(e.lngLat)
-        .setDOMContent(popup.$el)
-        .addTo(map)
-    })
-
     this.$store.dispatch('loadNetworks').then(() => {
       this.$store.dispatch('loadNetworksCollection').then((mapCollection) => {
         // Add a layer showing the places.
@@ -101,15 +71,34 @@ export default {
             'data': {
               'type': 'FeatureCollection',
               'features': features
-            }
+            },
+            'generateId': true
           })
           map.addLayer({
             'id': 'netPolys',
             'type': 'fill',
             'source': 'netLocations',
             'paint': {
-              'fill-color': '#004e6b',
-              'fill-opacity': 0.7
+              'fill-color': ['case',
+                ['boolean', ['feature-state', 'select'], false],
+                '#ce0058',
+                '#004e6b'
+              ],
+              'fill-opacity': ['case',
+                ['boolean', ['feature-state', 'select'], false],
+                1,
+                0.7
+              ]
+            },
+            'filter': ['==', '$type', 'Polygon']
+          })
+          map.addLayer({
+            'id': 'netPolyBorder',
+            'type': 'line',
+            'source': 'netLocations',
+            'paint': {
+              'line-color': 'rgb(255, 255, 255)',
+              'line-width': 1
             },
             'filter': ['==', '$type', 'Polygon']
           })
@@ -118,10 +107,18 @@ export default {
             'type': 'circle',
             'source': 'netLocations',
             'paint': {
-              'circle-opacity': 0.8,
+              'circle-opacity': ['case',
+                ['boolean', ['feature-state', 'select'], false],
+                1,
+                0.7
+              ],
               'circle-stroke-width': 1,
               'circle-stroke-color': '#fff',
-              'circle-color': '#004e6b'
+              'circle-color': ['case',
+                ['boolean', ['feature-state', 'select'], false],
+                '#ce0058',
+                '#004e6b'
+              ]
             },
             'filter': ['==', '$type', 'Point']
           })
@@ -129,6 +126,86 @@ export default {
       })
     }).then(() => {
       this.$store.dispatch('openStatePane', true)
+      // Init popup
+      vm.networksAtLocation = vm.getNetworksAtLocation(vm.getNetCollection[0].group)
+
+      let popup = new Vue({
+        ...Popup,
+        store: store,
+        propsData: {
+          networksData: vm.networksAtLocation
+        }
+      }).$mount()
+
+      popup.$on('updateNet', (id) => {
+        vm.setNet(id)
+      })
+
+      // Init select store
+      let hoveredStateId
+
+      new mapboxgl.Popup()
+        .setLngLat(vm.getNetCollection[0].geom.coordinates)
+        .setDOMContent(popup.$el)
+        .addTo(map)
+
+      // set event
+      map.on('click', function (e) {
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ['netPoints', 'netPolys']
+        })
+
+        if (features.length > 0) {
+          if (hoveredStateId) {
+            map.setFeatureState({ source: 'netLocations', id: hoveredStateId }, { select: false })
+          }
+          hoveredStateId = features[0].id
+          map.setFeatureState({ source: 'netLocations', id: hoveredStateId }, { select: true })
+        }
+
+        vm.networksAtLocation = vm.getNetworksAtLocation(features[0].properties.group)
+        vm.updateNetworks(vm.networksAtLocation)
+
+        popup = new Vue({
+          ...Popup,
+          store: store,
+          propsData: {
+            networksData: vm.networksAtLocation
+          }
+        }).$mount()
+
+        popup.$on('updateNet', (id) => {
+          vm.setNet(id)
+        })
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        // eslint-disable-next-line
+        if(features[0].geometry.type == "Point"){
+          new mapboxgl.Popup()
+            .setLngLat(features[0].geometry.coordinates)
+            .setDOMContent(popup.$el)
+            .addTo(map)
+        } else {
+          new mapboxgl.Popup()
+            .setLngLat(e.lngLat)
+            .setDOMContent(popup.$el)
+            .addTo(map)
+        }
+      })
+
+      map.on('mousemove', function (e) {
+        // get the network feature underneath the mouse
+        const features = map.queryRenderedFeatures(e.point, {
+          layers: ['netPoints', 'netPolys']
+        })
+        // if there's a point under our mouse, then do the following.
+        if (features.length > 0) {
+          map.getCanvas().style.cursor = (features[0].properties.Name !== null) ? 'pointer' : ''
+        } else {
+          map.getCanvas().style.cursor = ''
+        }
+      })
     })
   }
 }
