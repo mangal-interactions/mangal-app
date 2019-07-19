@@ -9,6 +9,7 @@ import VueLogger from 'vuejs-logger'
 import Vuetify from 'vuetify'
 import store from './store'
 import 'vuetify/dist/vuetify.min.css'
+import VueAnalytics from 'vue-analytics'
 
 Vue.config.productionTip = false
 
@@ -29,7 +30,12 @@ Vue.use(Vuetify, {
     secondary: '#008c77'
   }
 })
+
 Vue.use(VueLogger, LoggerOptions)
+
+Vue.use(VueAnalytics, {
+  id: 'UA-144176171-1'
+})
 
 /* eslint-disable no-new */
 new Vue({
