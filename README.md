@@ -1,11 +1,10 @@
-# mangal-app
+# mangal
 
-> mangal web app aimed to explore and expose the content of mangal-api
-
+> A Vue.js project
 
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 npm install
 
@@ -14,6 +13,9 @@ npm run dev
 
 # build for production with minification
 npm run build
+
+# run the built files
+node nodeServer.js
 
 # build for production and view the bundle analyzer report
 npm run build --report

@@ -1,19 +1,16 @@
 <template>
   <div>
     <v-container class="text-md-left">
-        <div class="title teal--text">Traits available</div>
-        <v-divider class="pb-10"></v-divider>
-        <v-flex xs12 pt-3>
-          <v-alert
-            :value="true"
-            type="secondary"
-          >
-            <div class="font-italic"> Coming soon...</div>
-          </v-alert>
-        </v-flex>
-        <div class="title teal--text pt-4">External IDs</div>
-        <v-divider class="pb-4"></v-divider>
-        <div>
+      <div class="title teal--text">Traits available</div>
+      <v-divider class="pb-10"></v-divider>
+      <v-flex xs12 pt-3>
+        <v-alert :value="true">
+          <div class="font-italic">Coming soon...</div>
+        </v-alert>
+      </v-flex>
+      <div class="title teal--text pt-4">External IDs</div>
+      <v-divider class="pb-4"></v-divider>
+      <div>
         <v-layout row wrap>
           <v-flex xs3 text-xs-center>
             <div class="font-weight-bold body-2">ITIS</div>
@@ -100,7 +97,10 @@
             </v-progress-circular>
           </v-flex>
           <v-flex xs12 text-xs-center pt-3>
-            <div class="body-2 pb-3 font-italic">Percent of IDs coverage from external sources for nodes of this network</div>
+            <div class="body-2 pb-3 font-italic">
+              Percent of IDs coverage from external sources for nodes of this
+              network
+            </div>
           </v-flex>
         </v-layout>
       </div>
@@ -109,47 +109,47 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import _ from 'lodash'
+import { mapGetters } from "vuex";
+import _ from "lodash";
 
 export default {
   methods: {
-    coverTaxo: function (infra) {
-      let v = []
+    coverTaxo: function(infra) {
+      let v = [];
+
       if (this.getTaxons) {
         this.getTaxons.forEach(node => {
-          if (_.has(node, 'taxonomy.' + infra)) {
-            node.taxonomy[infra] === null ? v.push(false) : v.push(true)
+          if (_.has(node, "taxonomy." + infra)) {
+            node.taxonomy[infra] === null ? v.push(false) : v.push(true);
           } else {
-            v.push(false)
+            v.push(false);
           }
-        })
-        return _.round((_.sum(v) / v.length * 100), 1)
+        });
+        return v.length > 0 ? _.round((_.sum(v) / v.length) * 100, 1) : 0;
       }
+      return 0;
     }
   },
   computed: {
-    ...mapGetters([
-      'getTaxons'
-    ]),
-    percentTSN: function () {
-      return this.coverTaxo('tsn')
+    ...mapGetters(["getTaxons"]),
+    percentTSN: function() {
+      return this.coverTaxo("tsn");
     },
-    percentNCBI: function () {
-      return this.coverTaxo('ncbi')
+    percentNCBI: function() {
+      return this.coverTaxo("ncbi");
     },
-    percentBOLD: function () {
-      return this.coverTaxo('bold')
+    percentBOLD: function() {
+      return this.coverTaxo("bold");
     },
-    percentEOL: function () {
-      return this.coverTaxo('eol')
+    percentEOL: function() {
+      return this.coverTaxo("eol");
     },
-    percentCOL: function () {
-      return this.coverTaxo('col')
+    percentCOL: function() {
+      return this.coverTaxo("col");
     },
-    percentGBIF: function () {
-      return this.coverTaxo('gbif')
+    percentGBIF: function() {
+      return this.coverTaxo("gbif");
     }
   }
-}
+};
 </script>
